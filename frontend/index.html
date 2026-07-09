@@ -3,92 +3,228 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rumain — Cosmic Voice Portal</title>
-  <meta name="description" content="Rumain: Premium Siri-like 3D voice console."/>
+  <title>Rumain — AI Voice Assistant</title>
+  <meta name="description" content="Rumain: Your local AI voice assistant powered by 4 cooperative agents. Control your laptop with your voice."/>
   <link rel="stylesheet" href="/static/style.css"/>
-  <!-- Load Three.js for liquid aurora stardust background -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
   <script src="/static/app.js" defer></script>
 </head>
 <body>
 
-  <!-- Fullscreen 3D Fluid Aurora & Starfield Canvas -->
-  <canvas id="bg-canvas"></canvas>
+<canvas id="bg-canvas"></canvas>
 
-  <div id="app" class="deck-container">
+<div id="app">
 
-    <!-- Top floating header -->
-    <div class="system-status-header">
-      <div class="status-pill" id="ws-status">
-        <span class="pulse-dot"></span>
-        <span id="ws-status-text">Connecting Uplink</span>
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">
+        <img src="/static/avatar.png" alt="Rumain Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+      </div>
+      <div class="logo-text">
+        <h1>Rumain</h1>
+        <p>LOCAL AI VOICE ASSISTANT</p>
+      </div>
+    </div>
+    <div class="header-status">
+      <div class="status-badge offline" id="ws-status">
+        <span class="dot"></span>
+        <span id="ws-status-text">Connecting...</span>
+      </div>
+      <div class="status-badge" id="wake-status" style="background:rgba(139,92,246,0.1);color:#8b5cf6;border-color:rgba(139,92,246,0.25)">
+        <span class="dot"></span>
+        <span>Say "Hey Rumain"</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Grid -->
+  <main>
+
+    <!-- LEFT: Pipeline agents -->
+    <div class="pipeline-section">
+      <div class="pipeline-title">Agent Pipeline</div>
+
+      <!-- EarAgent -->
+      <div class="agent-card" id="agent-ear"
+           style="--agent-color:var(--ear-color);--agent-glow:var(--ear-glow)">
+        <div class="agent-top">
+          <div class="agent-icon">👂</div>
+          <div>
+            <div class="agent-name">EarAgent</div>
+            <div class="agent-role">The Listener</div>
+          </div>
+        </div>
+        <div class="agent-status-bar"><div class="agent-status-fill" id="ear-fill"></div></div>
+        <div class="agent-state-tag" id="ear-state">sleeping</div>
+      </div>
+
+      <div class="pipe-connector"><div class="pipe-line"><div class="pipe-pulse"></div></div></div>
+
+      <!-- MindAgent -->
+      <div class="agent-card" id="agent-mind"
+           style="--agent-color:var(--mind-color);--agent-glow:var(--mind-glow)">
+        <div class="agent-top">
+          <div class="agent-icon">🧠</div>
+          <div>
+            <div class="agent-name">MindAgent</div>
+            <div class="agent-role">The Brain</div>
+          </div>
+        </div>
+        <div class="agent-status-bar"><div class="agent-status-fill" id="mind-fill"></div></div>
+        <div class="agent-state-tag" id="mind-state">idle</div>
+      </div>
+
+      <div class="pipe-connector"><div class="pipe-line"><div class="pipe-pulse"></div></div></div>
+
+      <!-- HandAgent -->
+      <div class="agent-card" id="agent-hand"
+           style="--agent-color:var(--hand-color);--agent-glow:var(--hand-glow)">
+        <div class="agent-top">
+          <div class="agent-icon">🤝</div>
+          <div>
+            <div class="agent-name">HandAgent</div>
+            <div class="agent-role">The Executor</div>
+          </div>
+        </div>
+        <div class="agent-status-bar"><div class="agent-status-fill" id="hand-fill"></div></div>
+        <div class="agent-state-tag" id="hand-state">idle</div>
+      </div>
+
+      <div class="pipe-connector"><div class="pipe-line"><div class="pipe-pulse"></div></div></div>
+
+      <!-- VoiceAgent -->
+      <div class="agent-card" id="agent-voice"
+           style="--agent-color:var(--voice-color);--agent-glow:var(--voice-glow)">
+        <div class="agent-top">
+          <div class="agent-icon">🔊</div>
+          <div>
+            <div class="agent-name">VoiceAgent</div>
+            <div class="agent-role">The Speaker</div>
+          </div>
+        </div>
+        <div class="agent-status-bar"><div class="agent-status-fill" id="voice-fill"></div></div>
+        <div class="agent-state-tag" id="voice-state">idle</div>
       </div>
     </div>
 
-    <!-- Main split layout -->
-    <div class="fluid-deck">
-      
-      <!-- LEFT: The Glassmorphic Voice Portal (Avatar) -->
-      <div class="glass-portal" id="portal-frame">
-        <div class="portal-sphere">
-          <!-- Inner stardust canvas for localized vortex behind avatar -->
-          <canvas id="orb-galaxy-canvas"></canvas>
-          <div class="avatar-capsule" id="orb-core">
-            <img src="/static/avatar.png" alt="Assistant Avatar" id="avatar-img" />
-          </div>
-        </div>
-        <div class="portal-status">
-          <p class="status-subtitle">System Status</p>
-          <h2 class="status-title" id="orb-state">Standby</h2>
-        </div>
-        
-        <!-- Elegant Voice Waveform -->
-        <div class="waveform" id="waveform">
-          <div class="wave-bar" style="height:6px"></div>
-          <div class="wave-bar" style="height:14px"></div>
-          <div class="wave-bar" style="height:8px"></div>
-          <div class="wave-bar" style="height:22px"></div>
-          <div class="wave-bar" style="height:10px"></div>
-          <div class="wave-bar" style="height:30px"></div>
-          <div class="wave-bar" style="height:18px"></div>
-          <div class="wave-bar" style="height:12px"></div>
-          <div class="wave-bar" style="height:26px"></div>
-          <div class="wave-bar" style="height:8px"></div>
-          <div class="wave-bar" style="height:20px"></div>
-          <div class="wave-bar" style="height:14px"></div>
-          <div class="wave-bar" style="height:6px"></div>
+    <!-- CENTER: Orb -->
+    <div class="orb-section">
+      <div class="orb-container" id="orb-container" title="Click to test a command" style="cursor: pointer; position: relative;">
+        <!-- 3D Galaxy Canvas Behind Avatar -->
+        <canvas id="orb-galaxy-canvas"></canvas>
+        <!-- Avatar Core -->
+        <div class="orb-core" id="orb-core" style="background: none; box-shadow: none; overflow: visible; display: flex; align-items: center; justify-content: center; transform: scale(1.1); position: relative; z-index: 2;">
+          <img src="/static/avatar.png" alt="AI Avatar" style="width: 110%; height: 110%; object-fit: cover; border-radius: 50%; box-shadow: 0 0 50px rgba(176,38,255,0.8), 0 0 100px rgba(0,240,255,0.5);">
         </div>
       </div>
 
-      <!-- RIGHT: The Chat Console (Log & Text fallback) -->
-      <div class="glass-console" id="console-frame">
-        <div class="console-header">
-          <span class="console-title">UPLINK_FEED</span>
-          <button onclick="clearLog()" class="clear-btn">Purge Logs</button>
-        </div>
-        
-        <div class="log-feed" id="log-feed">
-          <div class="log-entry info">
-            <span class="log-time" id="start-time"></span>
-            Awaiting system trigger...
-          </div>
-        </div>
-        
-        <div class="console-input-bar">
-          <button id="ptt-btn" class="voice-mic-btn" onclick="toggleWebSpeech()" title="Speak Command">
-            <span class="mic-glyph">🌀</span>
-          </button>
-          <input type="text" class="console-input" id="cmd-input"
-                 placeholder="Send a text command..."
-                 autocomplete="off"
-                 onkeydown="if(event.key==='Enter')sendCommand()"/>
-          <button class="send-action-btn" onclick="sendCommand()" title="Send">➤</button>
-        </div>
+      <div>
+        <div class="orb-label">Status</div>
+        <div class="orb-state" id="orb-state">Initializing...</div>
       </div>
 
+      <!-- Waveform (animated when speaking/listening) -->
+      <div class="waveform" id="waveform">
+        <div class="wave-bar" style="height:6px"></div>
+        <div class="wave-bar" style="height:14px"></div>
+        <div class="wave-bar" style="height:8px"></div>
+        <div class="wave-bar" style="height:22px"></div>
+        <div class="wave-bar" style="height:10px"></div>
+        <div class="wave-bar" style="height:30px"></div>
+        <div class="wave-bar" style="height:18px"></div>
+        <div class="wave-bar" style="height:12px"></div>
+        <div class="wave-bar" style="height:26px"></div>
+        <div class="wave-bar" style="height:8px"></div>
+        <div class="wave-bar" style="height:20px"></div>
+        <div class="wave-bar" style="height:14px"></div>
+        <div class="wave-bar" style="height:6px"></div>
+      </div>
+
+      <!-- Last intent display -->
+      <div class="card" style="width:100%;max-width:400px;padding:0">
+        <div class="card-header">
+          <span class="card-title">Last Intent</span>
+          <span id="intent-badge" style="font-size:0.72rem;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,0.06);color:var(--text-muted)">—</span>
+        </div>
+        <div class="card-body">
+          <div id="last-transcript" style="font-size:0.85rem;color:var(--text-muted);font-style:italic;min-height:1.2em">
+            Waiting for a command...
+          </div>
+          <div id="last-response" style="font-size:0.9rem;font-weight:600;margin-top:8px;color:var(--text-primary);min-height:1.2em"></div>
+        </div>
+      </div>
     </div>
 
-  </div>
+    <!-- RIGHT: Live log -->
+    <div class="log-section card">
+      <div class="card-header" style="padding:18px 20px 12px">
+        <span class="card-title">Live Log</span>
+        <button onclick="clearLog()" style="background:none;border:1px solid var(--glass-border);color:var(--text-muted);border-radius:8px;padding:3px 10px;font-size:0.7rem;cursor:pointer;font-family:inherit">Clear</button>
+      </div>
+      <div class="log-feed" id="log-feed">
+        <div class="log-entry info">
+          <span class="log-time" id="start-time"></span>
+          Dashboard loaded. Connecting to Rumain...
+        </div>
+      </div>
+      <div class="command-input-wrap">
+        <button id="ptt-btn" class="send-btn" style="background: linear-gradient(135deg, var(--orb-primary), var(--orb-secondary)); margin-right: 8px; font-size: 1.5rem; width: 64px; height: 64px; border-radius: 50%;" title="Click to Talk" onclick="toggleWebSpeech()">
+          <span style="display: block; font-size: 1.8rem;">🌀</span>
+        </button>
+        <input type="text" class="command-input" id="cmd-input"
+               placeholder="Type a command or hold Mic..."
+               autocomplete="off"
+               onkeydown="if(event.key==='Enter')sendCommand()"/>
+        <button class="send-btn" onclick="sendCommand()" title="Send command">➤</button>
+      </div>
+    </div>
 
+    <!-- STATS ROW -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon">⚡</div>
+        <div style="flex:1">
+          <div class="stat-label">CPU</div>
+          <div class="stat-value" id="stat-cpu">—</div>
+          <div class="stat-bar"><div class="stat-bar-fill" id="cpu-bar" style="background:linear-gradient(90deg,#06b6d4,#2563eb);width:0%"></div></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🧩</div>
+        <div style="flex:1">
+          <div class="stat-label">RAM</div>
+          <div class="stat-value" id="stat-ram">—</div>
+          <div class="stat-bar"><div class="stat-bar-fill" id="ram-bar" style="background:linear-gradient(90deg,#8b5cf6,#06b6d4);width:0%"></div></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔋</div>
+        <div style="flex:1">
+          <div class="stat-label">Battery</div>
+          <div class="stat-value" id="stat-bat">—</div>
+          <div class="stat-bar"><div class="stat-bar-fill" id="bat-bar" style="background:linear-gradient(90deg,#10b981,#06b6d4);width:0%"></div></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📡</div>
+        <div style="flex:1">
+          <div class="stat-label">Commands Today</div>
+          <div class="stat-value" id="stat-cmds">0</div>
+          <div class="stat-bar"><div class="stat-bar-fill" id="cmd-bar" style="background:linear-gradient(90deg,#f59e0b,#ef4444);width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    Rumain v1.0 &nbsp;·&nbsp; 4-Agent Pipeline &nbsp;·&nbsp;
+    EarAgent · MindAgent · HandAgent · VoiceAgent &nbsp;·&nbsp;
+    All processing local
+  </footer>
+
+</div>
 </body>
 </html>
