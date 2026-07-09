@@ -43,7 +43,17 @@ class MindAgent(Agent):
             # 2. Get tool schemas from the registry
             tool_schemas = registry.schemas
             
-            # 3. Call the configured LLM Provider
+            # 3. Check for API key configuration
+            if LLM_PROVIDER == "claude" and not ANTHROPIC_API_KEY:
+                self.set_state(AgentState.ERROR)
+                return Event(
+                    source="mind",
+                    target="voice",
+                    payload="Please configure your Anthropic API Key in the dot env file to use my brain.",
+                    metadata={"intent": "configuration_needed", "success": False}
+                )
+            
+            # 4. Call the configured LLM Provider
             if LLM_PROVIDER == "claude":
                 response = await self._call_claude(user_input, context, tool_schemas)
             else:
