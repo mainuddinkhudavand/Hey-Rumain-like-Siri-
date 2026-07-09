@@ -188,3 +188,35 @@ def take_screenshot() -> str:
         return f"Screenshot successfully saved to: {filepath}"
     except Exception as e:
         return f"Failed to capture screenshot. Error: {e}"
+
+# ── Do Not Disturb (DND) ──────────────────────────────────────
+@tool(
+    name="set_do_not_disturb",
+    description="Enable or disable Windows Do Not Disturb / Focus Assist mode.",
+    parameters={
+        "type": "object",
+        "properties": {
+            "enabled": {
+                "type": "boolean",
+                "description": "True to turn Do Not Disturb ON, False to turn it OFF"
+            }
+        },
+        "required": ["enabled"]
+    }
+)
+def set_do_not_disturb(enabled: bool) -> str:
+    try:
+        import winreg
+        # Open registry key for Notifications settings
+        reg_path = r"Software\Microsoft\Windows\CurrentVersion\Notifications\Settings"
+        key = winreg.CreateKeyEx(winreg.HKEY_CURRENT_USER, reg_path, 0, winreg.KEY_SET_VALUE)
+        
+        # NOC_GLOBAL_SETTING_TOASTS_ENABLED: 0 = Notifications Disabled (DND ON), 1 = Notifications Enabled (DND OFF)
+        value = 0 if enabled else 1
+        winreg.SetValueEx(key, "NOC_GLOBAL_SETTING_TOASTS_ENABLED", 0, winreg.REG_DWORD, value)
+        winreg.CloseKey(key)
+        
+        status = "enabled (DND ON)" if enabled else "disabled (DND OFF)"
+        return f"Do Not Disturb mode successfully {status}."
+    except Exception as e:
+        return f"Failed to modify Do Not Disturb state. Error: {e}"

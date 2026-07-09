@@ -63,3 +63,18 @@ def type_text(text: str) -> str:
         return f"Successfully typed text."
     except Exception as e:
         return f"Failed to type text. Error: {e}"
+
+# ── Clipboard Pasting ─────────────────────────────────────────
+@tool(
+    name="paste_text",
+    description="Simulate pressing Ctrl+V to paste the current clipboard contents at the cursor focus.",
+    parameters={"type": "object", "properties": {}}
+)
+def paste_text() -> str:
+    try:
+        # Give the user a brief moment (0.8s) to focus their target window/field
+        time.sleep(0.8)
+        pyautogui.hotkey("ctrl", "v")
+        return "Successfully pasted clipboard content."
+    except Exception as e:
+        return f"Failed to paste clipboard content. Error: {e}"
