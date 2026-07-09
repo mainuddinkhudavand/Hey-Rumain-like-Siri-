@@ -1,0 +1,37 @@
+# ============================================================
+#  Siri-like Voice Assistant — Python Dependencies
+# ============================================================
+
+# Web server & dashboard communication
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+websockets>=12.0
+pydantic>=2.0.0
+
+# Speech recognition (EarAgent)
+SpeechRecognition>=3.10.0
+pyaudio>=0.2.14; sys_platform == 'win32'
+vosk>=0.3.45
+
+# Text-To-Speech (VoiceAgent)
+pyttsx3>=2.90
+edge-tts>=6.1.12
+
+# OS automation (HandAgent & Tools)
+pyautogui>=0.9.54
+psutil>=5.9.8
+keyboard>=0.13.5
+pynput>=1.7.6
+
+# Windows volume and system controls
+pycaw>=20240210; sys_platform == 'win32'
+comtypes>=1.4.1; sys_platform == 'win32'
+screen-brightness-control>=0.23.0
+pywin32>=306; sys_platform == 'win32'
+
+# Database and configuration
+python-dotenv>=1.0.0
+sqlite3; python_version < '3' # Built-in, but listed for completeness
+
+# UI
+PyQt5>=5.15.10
