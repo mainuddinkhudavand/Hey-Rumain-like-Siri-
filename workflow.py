@@ -51,6 +51,13 @@ class RumainWorkflow:
         self._broadcast_cbs.append(cb)
 
     def _on_state_change(self, name: str, state: str) -> None:
+        # Update PyQt UI if active
+        try:
+            from ui.overlay import ui_bridge
+            ui_bridge.state_changed.emit(name, state)
+        except Exception:
+            pass
+
         try:
             loop = asyncio.get_event_loop()
             loop.call_soon_threadsafe(
@@ -103,13 +110,28 @@ class RumainWorkflow:
         }
         await self._broadcast(event_data)
 
-        # Log conversation to SQLite Memory
+        # Log conversation to SQLite Memory and notify PyQt UI
         if event.source == "ear" and event.target == "mind":
-            # Log raw user speech input
             self.memory.add_message("user", str(event.payload))
+            try:
+                from ui.overlay import ui_bridge
+                ui_bridge.speech_received.emit(str(event.payload), "user")
+            except Exception:
+                pass
         elif event.source == "hand" and event.target == "voice":
-            # Log assistant speech output
             self.memory.add_message("assistant", str(event.payload))
+            try:
+                from ui.overlay import ui_bridge
+                ui_bridge.speech_received.emit(str(event.payload), "assistant")
+            except Exception:
+                pass
+        elif event.source == "mind" and event.target == "voice":
+            self.memory.add_message("assistant", str(event.payload))
+            try:
+                from ui.overlay import ui_bridge
+                ui_bridge.speech_received.emit(str(event.payload), "assistant")
+            except Exception:
+                pass
 
         try:
             result: Optional[Event] = await agent.run(event)
