@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rumain — AI Voice Assistant</title>
+  <meta name="description" content="Rumain: Rebuilt Siri-like 3D desktop voice assistant."/>
+  <link rel="stylesheet" href="/static/style.css"/>
+  <!-- Load Three.js for 3D backgrounds and galaxy effects -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+
+  <!-- Fullscreen 3D Starfield Background Canvas -->
+  <canvas id="bg-canvas"></canvas>
+
+  <div id="app" class="perspective-container">
+
+    <!-- 3D Header -->
+    <header class="glass-3d">
+      <div class="logo-3d">
+        <div class="logo-orb"></div>
+        <div class="logo-text">
+          <h1>Rumain</h1>
+          <p>3D VOICE ASSISTANT</p>
+        </div>
+      </div>
+      <div class="status-panel">
+        <div class="status-badge offline" id="ws-status">
+          <span class="dot"></span>
+          <span id="ws-status-text">Connecting…</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main 3D Panel Layout -->
+    <div class="main-deck">
+      
+      <!-- LEFT: 3D Avatar Panel (Only keeps the girl picture inside 3D environment) -->
+      <div class="panel-3d avatar-panel glass-3d" id="avatar-panel">
+        <div class="panel-inner">
+          <div class="orb-galaxy-wrapper">
+            <canvas id="orb-galaxy-canvas"></canvas>
+            <div class="avatar-frame-3d" id="orb-core">
+              <img src="/static/avatar.png" alt="AI Assistant Avatar" id="avatar-img" />
+            </div>
+          </div>
+          <div class="orb-status">
+            <span class="orb-label">State</span>
+            <h2 class="orb-state" id="orb-state">Initializing…</h2>
+          </div>
+          <!-- Animated Voice Waveform -->
+          <div class="waveform" id="waveform">
+            <div class="wave-bar" style="height:6px"></div>
+            <div class="wave-bar" style="height:14px"></div>
+            <div class="wave-bar" style="height:8px"></div>
+            <div class="wave-bar" style="height:22px"></div>
+            <div class="wave-bar" style="height:10px"></div>
+            <div class="wave-bar" style="height:30px"></div>
+            <div class="wave-bar" style="height:18px"></div>
+            <div class="wave-bar" style="height:12px"></div>
+            <div class="wave-bar" style="height:26px"></div>
+            <div class="wave-bar" style="height:8px"></div>
+            <div class="wave-bar" style="height:20px"></div>
+            <div class="wave-bar" style="height:14px"></div>
+            <div class="wave-bar" style="height:6px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: 3D Log Panel (Only keeps conversation logs and input) -->
+      <div class="panel-3d log-panel glass-3d" id="log-panel">
+        <div class="panel-inner">
+          <div class="log-header">
+            <span class="log-title">Live Log Feed</span>
+            <button onclick="clearLog()" class="clear-btn-3d">Clear Logs</button>
+          </div>
+          
+          <div class="log-feed" id="log-feed">
+            <div class="log-entry info">
+              <span class="log-time" id="start-time"></span>
+              Console loaded. Awaiting connection to backend...
+            </div>
+          </div>
+          
+          <div class="input-deck-3d">
+            <button id="ptt-btn" class="mic-btn-3d" onclick="toggleWebSpeech()" title="Tap to Talk">
+              <span class="mic-icon">🌀</span>
+            </button>
+            <input type="text" class="input-3d" id="cmd-input"
+                   placeholder="Type a command or say 'Hey Rumain'..."
+                   autocomplete="off"
+                   onkeydown="if(event.key==='Enter')sendCommand()"/>
+            <button class="send-btn-3d" onclick="sendCommand()" title="Send">➤</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
