@@ -3,122 +3,86 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rumain — 3D Holographic Assistant</title>
-  <meta name="description" content="Rumain: Rebuilt Siri-like 3D desktop voice assistant with holographic UI."/>
+  <title>Rumain — Cosmic Voice Portal</title>
+  <meta name="description" content="Rumain: Premium Siri-like 3D voice console."/>
   <link rel="stylesheet" href="/static/style.css"/>
-  <!-- Load Three.js for advanced 3D elements -->
+  <!-- Load Three.js for liquid aurora stardust background -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
   <script src="/static/app.js" defer></script>
 </head>
 <body>
 
-  <!-- Fullscreen 3D Starfield & Holographic Grid Canvas -->
+  <!-- Fullscreen 3D Fluid Aurora & Starfield Canvas -->
   <canvas id="bg-canvas"></canvas>
 
-  <div id="app" class="perspective-container">
+  <div id="app" class="deck-container">
 
-    <!-- 3D Header -->
-    <header class="glass-3d">
-      <div class="logo-3d">
-        <div class="logo-orb"></div>
-        <div class="logo-text">
-          <h1>Rumain</h1>
-          <p>HOLOGRAPHIC AI PORTAL</p>
-        </div>
+    <!-- Top floating header -->
+    <div class="system-status-header">
+      <div class="status-pill" id="ws-status">
+        <span class="pulse-dot"></span>
+        <span id="ws-status-text">Connecting Uplink</span>
       </div>
-      <div class="status-panel">
-        <div class="status-badge offline" id="ws-status">
-          <span class="dot"></span>
-          <span id="ws-status-text">System offline</span>
-        </div>
-      </div>
-    </header>
+    </div>
 
-    <!-- Main Deck Grid -->
-    <div class="main-deck">
+    <!-- Main split layout -->
+    <div class="fluid-deck">
       
-      <!-- LEFT: Sci-Fi 3D Hologram Portal (The Avatar) -->
-      <div class="panel-3d avatar-panel glass-3d" id="avatar-panel">
-        <div class="panel-inner">
-          <div class="hologram-viewport">
-            
-            <!-- Three.js Local Star Galaxy behind avatar -->
-            <canvas id="orb-galaxy-canvas"></canvas>
-            
-            <!-- Circular Saturn Orbiting HUD Rings -->
-            <div class="hud-ring outer-ring"></div>
-            <div class="hud-ring middle-ring"></div>
-            <div class="hud-ring inner-ring"></div>
-            
-            <!-- Coordinate bracket markers -->
-            <div class="hud-bracket bracket-tl"></div>
-            <div class="hud-bracket bracket-tr"></div>
-            <div class="hud-bracket bracket-bl"></div>
-            <div class="hud-bracket bracket-br"></div>
-            
-            <!-- Circular Avatar Frame -->
-            <div class="avatar-frame-3d" id="orb-core">
-              <img src="/static/avatar.png" alt="Rumain Assistant Avatar" id="avatar-img" />
-              <!-- Hologram scanning sweep bar -->
-              <div class="scan-line"></div>
-            </div>
-            
+      <!-- LEFT: The Glassmorphic Voice Portal (Avatar) -->
+      <div class="glass-portal" id="portal-frame">
+        <div class="portal-sphere">
+          <!-- Inner stardust canvas for localized vortex behind avatar -->
+          <canvas id="orb-galaxy-canvas"></canvas>
+          <div class="avatar-capsule" id="orb-core">
+            <img src="/static/avatar.png" alt="Assistant Avatar" id="avatar-img" />
           </div>
-          
-          <div class="orb-status">
-            <span class="orb-label">System State</span>
-            <h2 class="orb-state" id="orb-state">AWAITING TRIGGER</h2>
-          </div>
-          
-          <!-- Cyberpunk Audio Waveform -->
-          <div class="waveform" id="waveform">
-            <div class="wave-bar" style="height:6px"></div>
-            <div class="wave-bar" style="height:14px"></div>
-            <div class="wave-bar" style="height:8px"></div>
-            <div class="wave-bar" style="height:22px"></div>
-            <div class="wave-bar" style="height:10px"></div>
-            <div class="wave-bar" style="height:30px"></div>
-            <div class="wave-bar" style="height:18px"></div>
-            <div class="wave-bar" style="height:12px"></div>
-            <div class="wave-bar" style="height:26px"></div>
-            <div class="wave-bar" style="height:8px"></div>
-            <div class="wave-bar" style="height:20px"></div>
-            <div class="wave-bar" style="height:14px"></div>
-            <div class="wave-bar" style="height:6px"></div>
-          </div>
+        </div>
+        <div class="portal-status">
+          <p class="status-subtitle">System Status</p>
+          <h2 class="status-title" id="orb-state">Standby</h2>
+        </div>
+        
+        <!-- Elegant Voice Waveform -->
+        <div class="waveform" id="waveform">
+          <div class="wave-bar" style="height:6px"></div>
+          <div class="wave-bar" style="height:14px"></div>
+          <div class="wave-bar" style="height:8px"></div>
+          <div class="wave-bar" style="height:22px"></div>
+          <div class="wave-bar" style="height:10px"></div>
+          <div class="wave-bar" style="height:30px"></div>
+          <div class="wave-bar" style="height:18px"></div>
+          <div class="wave-bar" style="height:12px"></div>
+          <div class="wave-bar" style="height:26px"></div>
+          <div class="wave-bar" style="height:8px"></div>
+          <div class="wave-bar" style="height:20px"></div>
+          <div class="wave-bar" style="height:14px"></div>
+          <div class="wave-bar" style="height:6px"></div>
         </div>
       </div>
 
-      <!-- RIGHT: Cybernetic Console (The Log & Input) -->
-      <div class="panel-3d log-panel glass-3d" id="log-panel">
-        <div class="panel-inner">
-          <div class="log-header">
-            <div class="terminal-dots">
-              <span class="term-dot red"></span>
-              <span class="term-dot yellow"></span>
-              <span class="term-dot green"></span>
-            </div>
-            <span class="log-title">CON_COMM_LOGS</span>
-            <button onclick="clearLog()" class="clear-btn-3d">PURGE</button>
+      <!-- RIGHT: The Chat Console (Log & Text fallback) -->
+      <div class="glass-console" id="console-frame">
+        <div class="console-header">
+          <span class="console-title">UPLINK_FEED</span>
+          <button onclick="clearLog()" class="clear-btn">Purge Logs</button>
+        </div>
+        
+        <div class="log-feed" id="log-feed">
+          <div class="log-entry info">
+            <span class="log-time" id="start-time"></span>
+            Awaiting system trigger...
           </div>
-          
-          <div class="log-feed" id="log-feed">
-            <div class="log-entry info">
-              <span class="log-time" id="start-time"></span>
-              [CORE_INIT] Holographic dashboard loaded. Awaiting backend uplink...
-            </div>
-          </div>
-          
-          <div class="input-deck-3d">
-            <button id="ptt-btn" class="mic-btn-3d" onclick="toggleWebSpeech()" title="Tap to Talk">
-              <span class="mic-icon">🌀</span>
-            </button>
-            <input type="text" class="input-3d" id="cmd-input"
-                   placeholder="Feed command to memory terminal..."
-                   autocomplete="off"
-                   onkeydown="if(event.key==='Enter')sendCommand()"/>
-            <button class="send-btn-3d" onclick="sendCommand()" title="Send">➤</button>
-          </div>
+        </div>
+        
+        <div class="console-input-bar">
+          <button id="ptt-btn" class="voice-mic-btn" onclick="toggleWebSpeech()" title="Speak Command">
+            <span class="mic-glyph">🌀</span>
+          </button>
+          <input type="text" class="console-input" id="cmd-input"
+                 placeholder="Send a text command..."
+                 autocomplete="off"
+                 onkeydown="if(event.key==='Enter')sendCommand()"/>
+          <button class="send-action-btn" onclick="sendCommand()" title="Send">➤</button>
         </div>
       </div>
 

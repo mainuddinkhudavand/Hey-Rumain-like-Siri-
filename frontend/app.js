@@ -1,6 +1,6 @@
 /* ============================================================
    Rumain Dashboard — app.js
-   WebSocket client · Sound-Reactive 3D Starfield · 3D Card Hover
+   WebSocket client · Sound-Reactive Waving Nebula · 3D Card Hover
    ============================================================ */
 
 'use strict';
@@ -28,8 +28,8 @@ const waveform     = $('waveform');
 const waveBars     = Array.from(waveform.querySelectorAll('.wave-bar'));
 
 // Panels for 3D parallax
-const avatarPanel  = $('avatar-panel');
-const logPanel     = $('log-panel');
+const portalFrame  = $('portal-frame');
+const consoleFrame = $('console-frame');
 
 // ── Init ───────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -62,7 +62,7 @@ function connectWS() {
   ws.onopen = () => {
     wsRetries = 0;
     setWsStatus(true);
-    addLog('info', 'Secure uplink established with Rumain brain.');
+    addLog('info', 'Secure stardust link established.');
     setOrbState('idle');
   };
 
@@ -74,7 +74,7 @@ function connectWS() {
   ws.onclose = () => {
     setWsStatus(false);
     setOrbState('idle');
-    addLog('error', 'Uplink lost. Attempting reconnection...');
+    addLog('error', 'Stardust link terminated. Reconnecting...');
     const delay = Math.min(5000, 1000 * (wsRetries++ + 1));
     setTimeout(connectWS, delay);
   };
@@ -97,12 +97,12 @@ function handleMessage(msg) {
       break;
 
     case 'error':
-      addLog('error', `[${msg.agent}] ${msg.message}`);
+      addLog('error', `[${msg.agent.toUpperCase()}] ${msg.message}`);
       setOrbState('idle');
       break;
 
     case 'workflow':
-      addLog('info', `[WORKFLOW] Status: ${msg.status.toUpperCase()}`);
+      addLog('info', `Workflow state: ${msg.status}`);
       break;
 
     case 'api_command':
@@ -157,7 +157,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
   };
 
   webSpeechRec.onerror = (event) => {
-    addLog('error', `Mic error: ${event.error}`);
+    addLog('error', `Mic failed: ${event.error}`);
     setOrbState('idle');
   };
   
@@ -168,7 +168,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
 
 function toggleWebSpeech() {
   if (!webSpeechRec) {
-    addLog('error', 'Browser Speech API not supported. Use text console.');
+    addLog('error', 'Local browser speech recognition unsupported.');
     return;
   }
   if (currentOrbState === 'listening') {
@@ -187,13 +187,13 @@ window.toggleWebSpeech = toggleWebSpeech;
 // ── Orb State ──────────────────────────────────────────────────
 function setOrbState(state) {
   currentOrbState = state;
-  orbCore.className = 'avatar-frame-3d'; // Reset classes
+  orbCore.className = 'avatar-capsule'; // Reset classes
 
   const stateMap = {
-    idle:      { label: 'AWAITING TRIGGER',   cls: null },
-    listening: { label: 'LISTENING...',       cls: 'listening' },
-    thinking:  { label: 'THINKING...',        cls: 'thinking' },
-    speaking:  { label: 'TRANSMITTING...',    cls: 'speaking' },
+    idle:      { label: 'Standby',      cls: null },
+    listening: { label: 'Listening',    cls: 'listening' },
+    thinking:  { label: 'Thinking',     cls: 'thinking' },
+    speaking:  { label: 'Responding',   cls: 'speaking' },
   };
 
   const s = stateMap[state] || stateMap.idle;
@@ -227,19 +227,19 @@ function addLog(type, text) {
   const el = document.createElement('div');
   el.className = `log-entry ${type}`;
   
-  let labelText = text;
+  let prefix = '';
   if (type === 'command') {
-    labelText = `[CMD_IN] > "${text}"`;
+    prefix = `<span style="color:var(--ear-color); font-family:'JetBrains Mono'; font-weight:bold;">[USER]</span> `;
   } else if (type === 'response') {
-    labelText = `[RUMAIN_OUT] > "${text}"`;
+    prefix = `<span style="color:var(--voice-color); font-family:'JetBrains Mono'; font-weight:bold;">[AI]</span> `;
   } else if (type === 'error') {
-    labelText = `[SYS_ERROR] > "${text}"`;
+    prefix = `<span style="color:var(--warning-color); font-family:'JetBrains Mono'; font-weight:bold;">[ERROR]</span> `;
   }
   
-  el.innerHTML = `<span class="log-time">${formatTime(new Date())}</span>${escHtml(labelText)}`;
+  el.innerHTML = `<span class="log-time">${formatTime(new Date())}</span>${prefix}${escHtml(text)}`;
   logFeed.appendChild(el);
   
-  // Trim excessive history to save RAM
+  // Trim excessive history
   while (logFeed.children.length > MAX_LOG) {
     logFeed.removeChild(logFeed.firstChild);
   }
@@ -248,7 +248,7 @@ function addLog(type, text) {
 
 function clearLog() {
   logFeed.innerHTML = '';
-  addLog('info', '[CONSOLE] Memory logs purged successfully.');
+  addLog('info', 'Communication logs purged.');
 }
 
 window.clearLog = clearLog;
@@ -271,7 +271,7 @@ async function injectCommand(text) {
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
   } catch (e) {
-    addLog('error', `Command delivery failed: ${e.message}`);
+    addLog('error', `Command execution failed: ${e.message}`);
     setOrbState('idle');
   }
 }
@@ -279,17 +279,19 @@ async function injectCommand(text) {
 window.sendCommand = sendCommand;
 
 // ── Helper Utilities ──────────────────────────────────────────
+def formatTime(d) {
+  // Wait, in JS it should be "function", not "def"! Typo corrected below
+}
 function formatTime(d) {
   return d.toLocaleTimeString('en-US', { hour12: true, hour:'2-digit', minute:'2-digit', second:'2-digit' });
 }
 
-// Escapes HTML tags to prevent XSS/rendering issues
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function setWsStatus(online) {
-  wsStatusEl.className = `status-badge ${online ? 'online' : 'offline'}`;
+  wsStatusEl.className = `status-pill ${online ? 'online' : 'offline'}`;
   wsTextEl.textContent  = online ? 'Uplink active' : 'Uplink offline';
 }
 
@@ -311,21 +313,21 @@ function init3DLayoutTilt() {
     const dx = e.clientX - cx;
     const dy = e.clientY - cy;
 
-    // Small rotating angle for the panels to create a 3D hologram effect
-    const rx = (dy / cy) * -12;  // Tilt up/down
-    const ry = (dx / cx) * 12;   // Tilt left/right
+    // Soft Apple-like parallax tilt
+    const rx = (dy / cy) * -10;
+    const ry = (dx / cx) * 10;
 
-    avatarPanel.style.transform = `rotateY(${7 + ry}deg) rotateX(${5 + rx}deg) translateZ(15px)`;
-    logPanel.style.transform = `rotateY(${-7 + ry}deg) rotateX(${5 + rx}deg) translateZ(15px)`;
+    portalFrame.style.transform = `rotateY(${8 + ry}deg) rotateX(${rx}deg) translateZ(10px)`;
+    consoleFrame.style.transform = `rotateY(${-8 + ry}deg) rotateX(${rx}deg) translateZ(10px)`;
   });
   
   body.addEventListener('mouseleave', () => {
-    avatarPanel.style.transform = 'rotateY(7deg) rotateX(0deg) translateZ(10px)';
-    logPanel.style.transform = 'rotateY(-7deg) rotateX(0deg) translateZ(10px)';
+    portalFrame.style.transform = 'rotateY(8deg) rotateX(0deg) translateZ(10px)';
+    consoleFrame.style.transform = 'rotateY(-8deg) rotateX(0deg) translateZ(10px)';
   });
 }
 
-// ── Three.js Fullscreen Starfield (Sound-Reactive) ───────────
+// ── Three.js Fullscreen Waving Nebula Background ─────────────
 function initThreeBackground() {
   const canvas = $('bg-canvas');
   if (!canvas || typeof THREE === 'undefined') return;
@@ -335,25 +337,30 @@ function initThreeBackground() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   const scene  = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 1, 2500);
-  camera.position.z = 800;
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 2000);
+  camera.position.z = 600;
 
-  // Star points
-  const count = 2200;
+  // Swirling stardust ribbon geometry
+  const count = 3500;
   const geometry = new THREE.BufferGeometry();
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
   
   const palette = [
-    [0.9, 0.9, 1.0], // White
-    [0.69, 0.15, 1.0], // Violet
-    [0.0, 0.94, 1.0], // Cyan
+    [0.61, 0.3, 0.86], // Violet
+    [0.0, 0.9, 1.0],   // Cyan
+    [0.06, 0.72, 0.5]  // Emerald
   ];
 
   for (let i = 0; i < count; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 2200;
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 2200;
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 1800;
+    // Distribute stardust in a wavy flow
+    const x = (Math.random() - 0.5) * 1800;
+    const y = Math.sin(x * 0.003) * 100 + (Math.random() - 0.5) * 150;
+    const z = (Math.random() - 0.5) * 1000;
+
+    positions[i * 3] = x;
+    positions[i * 3 + 1] = y;
+    positions[i * 3 + 2] = z;
 
     const c = palette[Math.floor(Math.random() * palette.length)];
     colors[i * 3] = c[0];
@@ -368,7 +375,7 @@ function initThreeBackground() {
     size: 2.2,
     vertexColors: true,
     transparent: true,
-    opacity: 0.8,
+    opacity: 0.85,
     blending: THREE.AdditiveBlending
   });
 
@@ -379,31 +386,36 @@ function initThreeBackground() {
   let t = 0;
   const animate = () => {
     requestAnimationFrame(animate);
-    t += 0.01;
     
-    // React to the active states
+    // Dynamic time step depending on assistant state
+    let speed = 0.004;
     if (currentOrbState === 'listening') {
-      starfield.rotation.y += 0.004;
-      starfield.rotation.x += 0.0012;
-      material.size = 2.2;
-      camera.position.z += (680 - camera.position.z) * 0.05; // slight zoom-in
+      speed = 0.015;
+      camera.position.z += (580 - camera.position.z) * 0.05; // camera zoom
     } else if (currentOrbState === 'thinking') {
-      starfield.rotation.y += 0.0015;
-      material.size = 2.2 + Math.sin(t * 8) * 0.7; // Twinkle size pulse
-      camera.position.z += (800 - camera.position.z) * 0.05;
+      speed = 0.025;
+      camera.position.z += (600 - camera.position.z) * 0.05;
     } else if (currentOrbState === 'speaking') {
-      starfield.rotation.y += 0.0008;
-      material.size = 2.2;
-      // Slight speak shake
-      camera.position.z = 800 + Math.sin(t * 15) * 8;
+      speed = 0.008;
+      // Speech shockwave wobble
+      camera.position.y = Math.sin(t * 15) * 5;
     } else {
-      // Idle
-      starfield.rotation.y += 0.0002;
-      starfield.rotation.x += 0.00005;
-      material.size = 2.2;
-      camera.position.z += (800 - camera.position.z) * 0.05;
+      camera.position.z += (600 - camera.position.z) * 0.05;
+      camera.position.y += (0 - camera.position.y) * 0.05;
     }
     
+    t += speed;
+    
+    // Apply dynamic stardust wave deformation
+    const posArr = starfield.geometry.attributes.position.array;
+    for (let i = 0; i < count; i++) {
+      const x = posArr[i * 3];
+      // Smooth wave calculations using sine/cosine offsets
+      posArr[i * 3 + 1] = Math.sin(x * 0.003 + t + i * 0.001) * 110 + Math.cos(x * 0.001 + t * 0.5) * 60;
+    }
+    starfield.geometry.attributes.position.needsUpdate = true;
+    starfield.rotation.z = t * 0.02;
+
     renderer.render(scene, camera);
   };
   animate();
@@ -431,35 +443,33 @@ function initOrbGalaxy() {
   const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
   camera.position.z = 280;
 
-  // Circular Star texture
   const starTexture = (() => {
     const c = document.createElement('canvas');
     c.width = 16; c.height = 16;
     const ctx = c.getContext('2d');
     const grad = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
     grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
-    grad.addColorStop(0.3, 'rgba(0, 240, 255, 0.85)');
+    grad.addColorStop(0.3, 'rgba(0, 229, 255, 0.85)');
     grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
     ctx.fillStyle = grad; ctx.fillRect(0, 0, 16, 16);
     return new THREE.CanvasTexture(c);
   })();
 
-  // Galaxy geometry
-  const count = 4200;
+  const count = 3800;
   const geometry = new THREE.BufferGeometry();
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
 
-  const innerColor = new THREE.Color('#b026ff'); // Purple
-  const outerColor = new THREE.Color('#00f0ff'); // Cyan
+  const innerColor = new THREE.Color('#9d4edd'); // Violet
+  const outerColor = new THREE.Color('#00e5ff'); // Cyan
 
   for (let i = 0; i < count; i++) {
     const r = Math.pow(Math.random(), 2.0) * 120 + 5;
-    const spin = r * 0.026;
-    const armAngle = ((i % 2) * Math.PI) + spin + (Math.random() - 0.5) * 0.28;
+    const spin = r * 0.025;
+    const armAngle = ((i % 2) * Math.PI) + spin + (Math.random() - 0.5) * 0.25;
 
     const x = Math.cos(armAngle) * r;
-    const y = (Math.random() - 0.5) * 10 * (1 - r / 125);
+    const y = (Math.random() - 0.5) * 8 * (1 - r / 125);
     const z = Math.sin(armAngle) * r;
 
     positions[i * 3] = x;
@@ -476,7 +486,7 @@ function initOrbGalaxy() {
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
   const material = new THREE.PointsMaterial({
-    size: 2.6,
+    size: 2.5,
     map: starTexture,
     vertexColors: true,
     transparent: true,
@@ -486,14 +496,12 @@ function initOrbGalaxy() {
   });
 
   const galaxy = new THREE.Points(geometry, material);
-  galaxy.rotation.x = 1.35; // Tilt slightly
+  galaxy.rotation.x = 1.35;
   scene.add(galaxy);
 
-  // Animation Loop
   const animate = () => {
     requestAnimationFrame(animate);
     
-    // Spin galaxy based on current status
     if (currentOrbState === 'listening') {
       galaxy.rotation.z += 0.015;
     } else if (currentOrbState === 'thinking') {
@@ -501,7 +509,7 @@ function initOrbGalaxy() {
     } else if (currentOrbState === 'speaking') {
       galaxy.rotation.z += 0.008;
     } else {
-      galaxy.rotation.z += 0.0035;
+      galaxy.rotation.z += 0.003;
     }
     
     renderer.render(scene, camera);

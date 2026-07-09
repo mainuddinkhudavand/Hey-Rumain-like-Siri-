@@ -1,35 +1,35 @@
 /* ============================================================
-   Rumain Voice Assistant — Cybernetic 3D Hologram Style
+   Rumain Voice Assistant — Cosmic Aurora Glassmorphism
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;900&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
 /* ── Design Tokens ─────────────────────────────────────────── */
 :root {
-  --bg-void:        #010006;
-  --bg-deep:        #03020c;
-  --bg-surface:     rgba(10, 8, 22, 0.45);
-  --bg-surface-hover: rgba(22, 16, 44, 0.55);
+  --bg-void:        #020008;
+  --bg-deep:        #040212;
+  --bg-surface:     rgba(15, 12, 35, 0.28);
+  --bg-surface-hover: rgba(28, 22, 58, 0.38);
   
-  --glass-border:   rgba(255, 255, 255, 0.06);
-  --glass-highlight: rgba(255, 255, 255, 0.1);
-  --glass-shadow:   0 35px 70px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.08);
+  --glass-border:   rgba(255, 255, 255, 0.05);
+  --glass-highlight: rgba(255, 255, 255, 0.08);
+  --glass-shadow:   0 40px 80px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255,255,255,0.06);
 
-  /* Neon Colors */
-  --ear-color:      #00f0ff;      /* Cyan */
-  --ear-glow:       rgba(0, 240, 255, 0.45);
-  --mind-color:     #b026ff;     /* Violet */
-  --mind-glow:      rgba(176, 38, 255, 0.45);
-  --voice-color:    #00ff88;    /* Emerald */
-  --voice-glow:     rgba(0, 255, 136, 0.45);
-  --warning-color:  #ff3264;    /* Crimson Red */
+  /* Colors */
+  --ear-color:      #00e5ff;      /* Electric Cyan */
+  --ear-glow:       rgba(0, 229, 255, 0.4);
+  --mind-color:     #9d4edd;     /* Soft Royal Violet */
+  --mind-glow:      rgba(157, 78, 221, 0.4);
+  --voice-color:    #10b981;    /* Soft Emerald */
+  --voice-glow:     rgba(16, 185, 129, 0.4);
+  --warning-color:  #ef4444;
 
   --text-primary:   #ffffff;
-  --text-muted:     rgba(255, 255, 255, 0.65);
-  --text-dim:       rgba(255, 255, 255, 0.35);
+  --text-muted:     rgba(255, 255, 255, 0.6);
+  --text-dim:       rgba(255, 255, 255, 0.3);
   
-  --transition:     all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  --radius-card:    32px;
+  --transition:     all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  --radius-card:    36px;
 }
 
 /* ── Global Reset & Body ───────────────────────────────────── */
@@ -49,14 +49,12 @@ body {
   min-height: 100vh;
   overflow: hidden;
   position: relative;
-  /* Ambient dark matrix grid */
+  /* Ambient stardust color meshes */
   background-image: 
-    linear-gradient(rgba(176, 38, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+    radial-gradient(circle at 20% 25%, rgba(157, 78, 221, 0.08), transparent 30%),
+    radial-gradient(circle at 80% 75%, rgba(0, 229, 255, 0.08), transparent 30%);
 }
 
-/* 3D Canvas Background */
 #bg-canvas {
   position: fixed; inset: 0;
   z-index: 0;
@@ -64,30 +62,64 @@ body {
 }
 
 /* ── App Shell & 3D Perspective ───────────────────────────── */
-.perspective-container {
+.deck-container {
   perspective: 2000px;
   transform-style: preserve-3d;
   position: relative; z-index: 2;
   display: flex;
   flex-direction: column;
   height: 100vh;
-  max-width: 1300px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 30px;
-  gap: 25px;
+  padding: 40px;
+  gap: 30px;
 }
 
-/* ── 3D Header ─────────────────────────────────────────────── */
-header {
+/* ── System Header ─────────────────────────────────────────── */
+.system-status-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 32px;
-  border-radius: 60px;
-  transform: translateZ(40px);
+  justify-content: flex-end;
+  transform: translateZ(50px);
 }
 
-.glass-3d {
+.status-pill {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 24px;
+  border-radius: 50px;
+  font-size: 0.75rem; font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  color: var(--text-muted);
+}
+
+.pulse-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--ear-color);
+  box-shadow: 0 0 10px var(--ear-color);
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 18px var(--ear-color); }
+}
+
+/* ── Main split layout ────────────────────────────────────── */
+.fluid-deck {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 40px;
+  transform-style: preserve-3d;
+  height: calc(100% - 80px);
+}
+
+.glass-portal, .glass-console {
+  border-radius: var(--radius-card);
+  padding: 40px;
   background: var(--bg-surface);
   backdrop-filter: blur(40px) saturate(220%);
   -webkit-backdrop-filter: blur(40px) saturate(220%);
@@ -98,340 +130,148 @@ header {
   transform-style: preserve-3d;
 }
 
-.glass-3d:hover {
+.glass-portal:hover, .glass-console:hover {
   background: var(--bg-surface-hover);
-  border-color: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 45px 90px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.15);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 50px 100px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.12);
 }
 
-.logo-3d {
-  display: flex; align-items: center; gap: 16px;
-  transform: translateZ(10px);
-}
-
-.logo-orb {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--mind-color), var(--ear-color));
-  box-shadow: 0 0 20px var(--mind-glow);
-  animation: logoBreath 3s ease-in-out infinite;
-}
-
-@keyframes logoBreath {
-  0%, 100% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 35px var(--ear-glow); }
-}
-
-.logo-text h1 {
-  font-size: 1.6rem; font-weight: 900; letter-spacing: -0.01em;
-  background: linear-gradient(to right, #ffffff, var(--ear-color));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  line-height: 1;
-}
-
-.logo-text p {
-  font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.15em;
-  text-transform: uppercase; margin-top: 2px;
-}
-
-/* Status Badge */
-.status-badge {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 18px;
-  border-radius: 25px;
-  font-size: 0.8rem; font-weight: 700;
-  border: 1px solid var(--glass-border);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.status-badge.online {
-  background: rgba(0, 255, 136, 0.08);
-  color: #00ff88;
-  border-color: rgba(0, 255, 136, 0.2);
-  box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
-}
-
-.status-badge.offline {
-  background: rgba(255, 50, 100, 0.08);
-  color: #ff3264;
-  border-color: rgba(255, 50, 100, 0.2);
-}
-
-.dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: currentColor;
-  box-shadow: 0 0 8px currentColor;
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.8); }
-}
-
-/* ── Main Deck (3D Panels Grid) ───────────────────────────── */
-.main-deck {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  gap: 35px;
-  transform-style: preserve-3d;
-  height: calc(100% - 100px);
-}
-
-.panel-3d {
-  border-radius: var(--radius-card);
-  padding: 35px;
-  transform-style: preserve-3d;
-  display: flex;
-  flex-direction: column;
-}
-
-.panel-inner {
-  transform-style: preserve-3d;
-  flex: 1;
+/* ── LEFT: The Glassmorphic Voice Portal (Avatar) ─────────── */
+.glass-portal {
+  transform: rotateY(8deg) translateZ(10px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  height: 100%;
 }
 
-/* ── 3D Hologram Viewport (Left Side) ───────────────────────── */
-.avatar-panel {
-  transform: rotateY(7deg) translateZ(10px);
+.portal-sphere {
   position: relative;
-}
-
-.hologram-viewport {
-  position: relative;
-  width: 340px; height: 340px;
+  width: 320px; height: 320px;
   display: flex; align-items: center; justify-content: center;
   transform-style: preserve-3d;
-  transform: translateZ(50px);
-  margin-top: 10px;
+  transform: translateZ(40px);
 }
 
 #orb-galaxy-canvas {
   position: absolute;
-  top: -30px; left: -30px;
+  top: -40px; left: -40px;
   width: 400px; height: 400px;
   pointer-events: none;
   z-index: 1;
 }
 
-/* Saturn Orbiting HUD Rings */
-.hud-ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1.5px solid transparent;
-  transform-style: preserve-3d;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.outer-ring {
-  width: 290px; height: 290px;
-  border-top-color: var(--ear-color);
-  border-bottom-color: var(--ear-color);
-  border-style: dotted;
-  animation: spinCw 15s linear infinite;
-  opacity: 0.45;
-}
-
-.middle-ring {
-  width: 250px; height: 250px;
-  border-left-color: var(--mind-color);
-  border-right-color: var(--mind-color);
-  border-style: dashed;
-  animation: spinCcw 10s linear infinite;
-  opacity: 0.55;
-}
-
-.inner-ring {
-  width: 210px; height: 210px;
-  border-top-color: var(--voice-color);
-  border-style: solid;
-  animation: spinCw 6s linear infinite;
-  opacity: 0.6;
-}
-
-@keyframes spinCw {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes spinCcw {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
-}
-
-/* Hologram Reticle Corner Brackets */
-.hud-bracket {
-  position: absolute;
-  width: 15px; height: 15px;
-  border: 2px solid var(--ear-color);
-  opacity: 0.7;
-  pointer-events: none;
-  z-index: 3;
-  animation: bracketPulse 2s ease-in-out infinite alternate;
-}
-
-.bracket-tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
-.bracket-tr { top: 20px; right: 20px; border-left: none; border-bottom: none; }
-.bracket-bl { bottom: 20px; left: 20px; border-right: none; border-top: none; }
-.bracket-br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
-
-@keyframes bracketPulse {
-  from { opacity: 0.4; transform: scale(0.95); }
-  to { opacity: 0.85; transform: scale(1.05); }
-}
-
 /* Circular Avatar Frame */
-.avatar-frame-3d {
-  width: 170px; height: 170px;
+.avatar-capsule {
+  width: 180px; height: 180px;
   border-radius: 50%;
   position: relative;
-  z-index: 4;
+  z-index: 2;
   overflow: hidden;
   box-shadow: 
-    0 0 45px rgba(176, 38, 255, 0.6),
-    0 0 90px rgba(0, 240, 255, 0.4),
-    inset 0 0 25px rgba(255, 255, 255, 0.2);
+    0 0 50px rgba(157, 78, 221, 0.5),
+    0 0 100px rgba(0, 229, 255, 0.3),
+    inset 0 0 30px rgba(255, 255, 255, 0.2);
   transition: var(--transition);
   transform-style: preserve-3d;
-  transform: translateZ(30px);
+  transform: translateZ(20px);
 }
 
-.avatar-frame-3d img {
+.avatar-capsule img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
-  transform: scale(1.02);
+  transform: scale(1.03);
 }
 
-/* Holographic Scanline bar */
-.scan-line {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 4px;
-  background: linear-gradient(to right, transparent, var(--ear-color), transparent);
-  box-shadow: 0 0 12px var(--ear-color);
-  animation: scanSweep 4s linear infinite;
-  z-index: 5;
-  pointer-events: none;
-  opacity: 0.6;
+.glass-portal:hover .avatar-capsule {
+  transform: translateZ(35px) scale(1.02);
 }
 
-@keyframes scanSweep {
-  0% { top: 0%; }
-  50% { top: 100%; }
-  100% { top: 0%; }
-}
-
-.avatar-panel:hover .avatar-frame-3d {
-  transform: translateZ(40px) scale(1.03);
-}
-
-.orb-status {
+.portal-status {
   text-align: center;
-  transform: translateZ(35px);
+  transform: translateZ(30px);
   margin: 10px 0;
 }
 
-.orb-label {
-  font-size: 0.75rem;
+.status-subtitle {
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.25em;
   color: var(--text-dim);
   font-weight: 700;
   font-family: 'JetBrains Mono', monospace;
 }
 
-.orb-state {
-  font-size: 2rem;
+.status-title {
+  font-size: 2.1rem;
   font-weight: 900;
   margin-top: 6px;
   letter-spacing: 0.05em;
   background: linear-gradient(135deg, #ffffff, var(--ear-color));
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
+  text-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
 }
 
-/* Cyberpunk Waveform */
+/* Siri-like Waveform */
 .waveform {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   height: 48px;
-  transform: translateZ(30px);
+  transform: translateZ(25px);
 }
 
 .wave-bar {
   width: 5px;
   border-radius: 3px;
   background: linear-gradient(to top, var(--mind-color), var(--ear-color));
-  box-shadow: 0 0 12px var(--ear-glow);
+  box-shadow: 0 0 10px var(--ear-glow);
   transition: height 0.1s ease;
 }
 
-/* ── Cybernetic Console Panel (Right Side) ──────────────────── */
-.log-panel {
-  transform: rotateY(-7deg) translateZ(10px);
+/* ── RIGHT: The Chat Console (Log & Text input) ──────────── */
+.glass-console {
+  transform: rotateY(-8deg) translateZ(10px);
+  display: flex;
+  flex-direction: column;
   justify-content: space-between;
 }
 
-.log-header {
+.console-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  padding-bottom: 14px;
-  transform: translateZ(25px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding-bottom: 16px;
+  transform: translateZ(20px);
 }
 
-.terminal-dots {
-  display: flex;
-  gap: 6px;
-}
-
-.term-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-}
-.term-dot.red { background-color: var(--warning-color); box-shadow: 0 0 8px var(--warning-color); }
-.term-dot.yellow { background-color: #ffb300; }
-.term-dot.green { background-color: var(--voice-color); }
-
-.log-title {
+.console-title {
   font-size: 0.8rem;
   font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.18em;
   color: var(--text-muted);
   font-family: 'JetBrains Mono', monospace;
 }
 
-.clear-btn-3d {
+.clear-btn {
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.06);
   color: var(--text-dim);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 6px 14px;
   font-size: 0.72rem;
   cursor: pointer;
   font-family: 'JetBrains Mono', monospace;
-  font-weight: bold;
   transition: var(--transition);
 }
 
-.clear-btn-3d:hover {
-  background: rgba(255, 50, 100, 0.1);
-  border-color: var(--warning-color);
-  color: #ff3264;
-  box-shadow: 0 0 15px rgba(255, 50, 100, 0.2);
+.clear-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
 }
 
 .log-feed {
@@ -441,91 +281,92 @@ header {
   padding: 20px 0;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
   max-height: calc(100vh - 280px);
-  transform: translateZ(20px);
+  transform: translateZ(15px);
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.05) transparent;
 }
 
 .log-feed::-webkit-scrollbar {
   width: 4px;
 }
 .log-feed::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
 }
 
 .log-entry {
-  padding: 12px 18px;
-  border-radius: 16px;
-  font-size: 0.86rem;
-  line-height: 1.6;
+  padding: 14px 20px;
+  border-radius: 20px;
+  font-size: 0.88rem;
+  line-height: 1.5;
   border-left: 3px solid transparent;
   animation: entryFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(255, 255, 255, 0.02);
   word-break: break-word;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   transform: translateZ(10px);
+  color: var(--text-muted);
 }
 
 @keyframes entryFade {
-  from { opacity: 0; transform: translateY(15px) scale(0.97); }
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .log-entry.command {
-  background: rgba(0, 240, 255, 0.05);
+  background: rgba(0, 229, 255, 0.03);
   border-color: var(--ear-color);
   color: #ffffff;
-  margin-left: 15px;
-  box-shadow: 0 4px 15px rgba(0, 240, 255, 0.06);
+  margin-left: 20px;
+  border-radius: 20px 20px 4px 20px;
 }
 
 .log-entry.response {
-  background: rgba(0, 255, 136, 0.05);
+  background: rgba(16, 185, 129, 0.03);
   border-color: var(--voice-color);
   color: #e6fffa;
-  margin-right: 15px;
-  box-shadow: 0 4px 15px rgba(0, 255, 136, 0.06);
+  margin-right: 20px;
+  border-radius: 20px 20px 20px 4px;
 }
 
 .log-entry.error {
-  background: rgba(255, 50, 100, 0.05);
+  background: rgba(239, 68, 68, 0.03);
   border-color: var(--warning-color);
-  color: #ffe4e6;
-  box-shadow: 0 4px 15px rgba(255, 50, 100, 0.06);
+  color: #fee2e2;
 }
 
 .log-entry.info {
-  background: rgba(255, 255, 255, 0.01);
-  border-color: rgba(255, 255, 255, 0.1);
-  color: var(--text-muted);
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.06);
+  color: var(--text-dim);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  box-shadow: none;
 }
 
 .log-time {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--text-dim);
   display: block;
   margin-bottom: 4px;
 }
 
-/* ── Input Deck (Bottom Log Panel) ───────────────────────── */
-.input-deck-3d {
+/* ── Console Input Bar ───────────────────────────────────── */
+.console-input-bar {
   display: flex;
   gap: 12px;
   width: 100%;
-  border-top: 1px solid rgba(255,255,255,0.08);
+  border-top: 1px solid rgba(255,255,255,0.06);
   padding-top: 20px;
-  transform: translateZ(30px);
+  transform: translateZ(25px);
 }
 
-.input-3d {
+.console-input {
   flex: 1;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 14px 22px;
@@ -534,37 +375,35 @@ header {
   font-size: 0.95rem;
   outline: none;
   transition: var(--transition);
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
 }
 
-.input-3d:focus {
+.console-input:focus {
   border-color: var(--mind-color);
-  background: rgba(176, 38, 255, 0.05);
-  box-shadow: 0 0 0 4px rgba(176, 38, 255, 0.2), inset 0 2px 4px rgba(0,0,0,0.4);
+  background: rgba(157, 78, 221, 0.03);
+  box-shadow: 0 0 0 4px rgba(157, 78, 221, 0.15);
 }
 
-.mic-btn-3d {
+.voice-mic-btn {
   width: 50px; height: 50px;
   border-radius: 16px;
   border: 1px solid var(--glass-border);
-  background: var(--bg-surface);
+  background: rgba(255,255,255,0.02);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: var(--transition);
-  box-shadow: var(--glass-shadow);
 }
 
-.mic-btn-3d:hover {
+.voice-mic-btn:hover {
   transform: scale(1.05) translateZ(8px);
   border-color: var(--ear-color);
   box-shadow: 0 0 20px var(--ear-glow);
 }
 
-.mic-icon {
+.mic-glyph {
   font-size: 1.4rem;
 }
 
-.send-btn-3d {
+.send-action-btn {
   width: 50px; height: 50px;
   border-radius: 16px;
   background: linear-gradient(135deg, var(--mind-color), var(--ear-color));
@@ -574,54 +413,55 @@ header {
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: var(--transition);
-  box-shadow: 0 5px 15px rgba(176, 38, 255, 0.4);
+  box-shadow: 0 5px 15px rgba(157, 78, 221, 0.3);
 }
 
-.send-btn-3d:hover {
+.send-action-btn:hover {
   transform: scale(1.05) translateZ(8px);
-  box-shadow: 0 8px 25px rgba(176, 38, 255, 0.6);
+  box-shadow: 0 8px 25px rgba(157, 78, 221, 0.45);
 }
 
-/* ── State classes for Avatar Frame ───────────────────────── */
-.avatar-frame-3d.listening {
+/* ── State classes for Avatar ────────────────────────────── */
+.avatar-capsule.listening {
   animation: borderListen 1.2s ease-in-out infinite alternate;
 }
 @keyframes borderListen {
-  from { box-shadow: 0 0 40px rgba(0, 240, 255, 0.7); }
-  to { box-shadow: 0 0 90px rgba(0, 240, 255, 1), 0 0 130px rgba(176, 38, 255, 0.6); transform: translateZ(40px) scale(1.06); }
+  from { box-shadow: 0 0 40px rgba(0, 229, 255, 0.7); }
+  to { box-shadow: 0 0 85px rgba(0, 229, 255, 1), 0 0 120px rgba(157, 78, 221, 0.5); transform: translateZ(30px) scale(1.04); }
 }
 
-.avatar-frame-3d.thinking {
+.avatar-capsule.thinking {
   animation: borderThink 1.5s cubic-bezier(0.68,-0.55,0.27,1.55) infinite;
 }
 @keyframes borderThink {
-  0%, 100% { transform: translateZ(30px) rotate(0deg); }
-  50% { transform: translateZ(35px) rotate(15deg) scale(1.03); box-shadow: 0 0 70px rgba(176, 38, 255, 0.9); }
+  0%, 100% { transform: translateZ(20px) rotate(0deg); }
+  50% { transform: translateZ(25px) rotate(10deg) scale(1.02); box-shadow: 0 0 60px rgba(157, 78, 221, 0.8); }
 }
 
-.avatar-frame-3d.speaking {
+.avatar-capsule.speaking {
   animation: borderSpeak 0.3s ease-in-out infinite alternate;
 }
 @keyframes borderSpeak {
-  from { transform: translateZ(30px) scale(0.98); box-shadow: 0 0 45px rgba(0, 255, 136, 0.6); }
-  to { transform: translateZ(35px) scale(1.05); box-shadow: 0 0 85px rgba(0, 255, 136, 1); }
+  from { transform: translateZ(20px) scale(0.98); box-shadow: 0 0 40px rgba(16, 185, 129, 0.6); }
+  to { transform: translateZ(25px) scale(1.04); box-shadow: 0 0 75px rgba(16, 185, 129, 1); }
 }
 
 /* ── Responsive adjustments ────────────────────────────────── */
 @media (max-width: 950px) {
-  .main-deck {
+  .fluid-deck {
     grid-template-columns: 1fr;
     height: auto;
-    overflow-y: auto;
   }
-  .perspective-container {
+  .deck-container {
     height: auto;
     overflow-y: auto;
+    padding: 20px;
   }
-  .avatar-panel, .log-panel {
+  .glass-portal, .glass-console {
     transform: none !important;
+    padding: 30px;
   }
   .log-feed {
-    max-height: 400px;
+    max-height: 350px;
   }
 }
