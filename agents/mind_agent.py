@@ -46,13 +46,10 @@ class MindAgent(Agent):
             
             # 3. Check for API key configuration
             if LLM_PROVIDER == "claude" and not ANTHROPIC_API_KEY:
-                self.set_state(AgentState.ERROR)
-                return Event(
-                    source="mind",
-                    target="voice",
-                    payload="Please configure your Anthropic API Key in the dot env file to use my brain.",
-                    metadata={"intent": "configuration_needed", "success": False}
-                )
+                logger.warning("Anthropic key missing; falling back to rule-based parser.")
+                fallback_event = self._rule_based_fallback(user_input)
+                self.set_state(AgentState.SUCCESS)
+                return fallback_event
             
             # 4. Call the configured LLM Provider
             if LLM_PROVIDER == "claude":
@@ -65,14 +62,19 @@ class MindAgent(Agent):
             
         except Exception as e:
             logger.error(f"MindAgent error: {e}", exc_info=True)
-            self.set_state(AgentState.ERROR)
-            # Fallback direct response
-            return Event(
-                source="mind",
-                target="voice",
-                payload="I encountered an issue processing that request with my brain.",
-                metadata={"intent": "error", "success": False}
-            )
+            try:
+                fallback_event = self._rule_based_fallback(user_input)
+                self.set_state(AgentState.SUCCESS)
+                return fallback_event
+            except Exception as fe:
+                logger.error(f"Fallback brain failed: {fe}")
+                self.set_state(AgentState.ERROR)
+                return Event(
+                    source="mind",
+                    target="voice",
+                    payload="I encountered an issue processing that request with my brain.",
+                    metadata={"intent": "error", "success": False}
+                )
 
     # ── Claude API Caller ────────────────────────────────────
     async def _call_claude(self, prompt: str, context: List[Dict[str, str]], tools: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -238,4 +240,194 @@ class MindAgent(Agent):
             target="voice",
             payload=text_content,
             metadata={"intent": "conversation", "success": True}
+        )
+
+    # ── Rule-Based Fallback Brain ────────────────────────────
+    def _rule_based_fallback(self, user_input: str) -> Event:
+        user_input_lower = user_input.lower()
+        import time
+        
+        # Open Application
+        if "open" in user_input_lower:
+            app_name = "notepad"
+            if "code" in user_input_lower or "vs" in user_input_lower:
+                app_name = "vscode"
+            elif "chrome" in user_input_lower or "browser" in user_input_lower:
+                app_name = "chrome"
+            elif "calculator" in user_input_lower or "calc" in user_input_lower:
+                app_name = "calc"
+            
+            # Simple word extractor
+            words = user_input_lower.split()
+            try:
+                open_idx = words.index("open")
+                if open_idx + 1 < len(words):
+                    app_name = words[open_idx + 1]
+            except ValueError:
+                pass
+                
+            return Event(
+                source="mind",
+                target="hand",
+                payload={
+                    "action": "execute_tool",
+                    "tool_name": "open_application",
+                    "arguments": {"app_name": app_name},
+                    "tool_id": "fallback_tool"
+                },
+                metadata={"intent": "open_application"}
+            )
+            
+        # Close Application
+        if "close" in user_input_lower or "kill" in user_input_lower:
+            app_name = "notepad"
+            if "code" in user_input_lower or "vs" in user_input_lower:
+                app_name = "code"
+            elif "chrome" in user_input_lower or "browser" in user_input_lower:
+                app_name = "chrome"
+                
+            return Event(
+                source="mind",
+                target="hand",
+                payload={
+                    "action": "execute_tool",
+                    "tool_name": "close_application",
+                    "arguments": {"app_name": app_name},
+                    "tool_id": "fallback_tool"
+                },
+                metadata={"intent": "close_application"}
+            )
+
+        # Launch URL / Search
+        if "google" in user_input_lower or "search" in user_input_lower:
+            query = user_input
+            if "search for" in user_input_lower:
+                query = user_input.split("search for", 1)[1].strip()
+            elif "search" in user_input_lower:
+                query = user_input.split("search", 1)[1].strip()
+            elif "google" in user_input_lower:
+                query = user_input.split("google", 1)[1].strip()
+                
+            return Event(
+                source="mind",
+                target="hand",
+                payload={
+                    "action": "execute_tool",
+                    "tool_name": "search_web",
+                    "arguments": {"query": query},
+                    "tool_id": "fallback_tool"
+                },
+                metadata={"intent": "search_web"}
+            )
+
+        # Volume Controls
+        if "volume" in user_input_lower:
+            level = 50
+            if "up" in user_input_lower or "increase" in user_input_lower:
+                level = 70
+            elif "down" in user_input_lower or "decrease" in user_input_lower:
+                level = 20
+            elif "mute" in user_input_lower:
+                level = 0
+                
+            return Event(
+                source="mind",
+                target="hand",
+                payload={
+                    "action": "execute_tool",
+                    "tool_name": "set_volume",
+                    "arguments": {"level": level},
+                    "tool_id": "fallback_tool"
+                },
+                metadata={"intent": "set_volume"}
+            )
+            
+        # Brightness Controls
+        if "brightness" in user_input_lower:
+            level = 50
+            if "up" in user_input_lower or "increase" in user_input_lower:
+                level = 80
+            elif "down" in user_input_lower or "decrease" in user_input_lower:
+                level = 30
+                
+            return Event(
+                source="mind",
+                target="hand",
+                payload={
+                    "action": "execute_tool",
+                    "tool_name": "set_brightness",
+                    "arguments": {"level": level},
+                    "tool_id": "fallback_tool"
+                },
+                metadata={"intent": "set_brightness"}
+            )
+
+        # Screenshot
+        if "screenshot" in user_input_lower or "screen shot" in user_input_lower:
+            return Event(
+                source="mind",
+                target="hand",
+                payload={
+                    "action": "execute_tool",
+                    "tool_name": "take_screenshot",
+                    "arguments": {},
+                    "tool_id": "fallback_tool"
+                },
+                metadata={"intent": "take_screenshot"}
+            )
+
+        # System Status
+        if "status" in user_input_lower or "cpu" in user_input_lower or "ram" in user_input_lower or "battery" in user_input_lower or "specs" in user_input_lower:
+            return Event(
+                source="mind",
+                target="hand",
+                payload={
+                    "action": "execute_tool",
+                    "tool_name": "get_system_status",
+                    "arguments": {},
+                    "tool_id": "fallback_tool"
+                },
+                metadata={"intent": "get_system_status"}
+            )
+
+        # Clipboard
+        if "clipboard" in user_input_lower or "paste" in user_input_lower:
+            return Event(
+                source="mind",
+                target="hand",
+                payload={
+                    "action": "execute_tool",
+                    "tool_name": "read_clipboard",
+                    "arguments": {},
+                    "tool_id": "fallback_tool"
+                },
+                metadata={"intent": "read_clipboard"}
+            )
+
+        # Time
+        if "time" in user_input_lower or "date" in user_input_lower:
+            from datetime import datetime
+            now_str = datetime.now().strftime("%I:%M %p")
+            return Event(
+                source="mind",
+                target="voice",
+                payload=f"The current local time is {now_str}.",
+                metadata={"intent": "response", "success": True}
+            )
+
+        # Hello / Greetings
+        if "hello" in user_input_lower or "hi" in user_input_lower or "hey" in user_input_lower:
+            return Event(
+                source="mind",
+                target="voice",
+                payload="Hello! I am running in local backup mode. Ask me to open notepad, check system status, or run system tools!",
+                metadata={"intent": "response", "success": True}
+            )
+
+        # Default conversational response
+        return Event(
+            source="mind",
+            target="voice",
+            payload=f"I heard you say '{user_input}'. My full brain is currently offline. You can configure your Anthropic API Key in the .env file, or ask me to open apps like notepad or check system status in backup mode.",
+            metadata={"intent": "response", "success": True}
         )
