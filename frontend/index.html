@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rumain — AI Voice Assistant</title>
-  <meta name="description" content="Rumain: Rebuilt Siri-like 3D desktop voice assistant."/>
+  <title>Rumain — 3D Holographic Assistant</title>
+  <meta name="description" content="Rumain: Rebuilt Siri-like 3D desktop voice assistant with holographic UI."/>
   <link rel="stylesheet" href="/static/style.css"/>
-  <!-- Load Three.js for 3D backgrounds and galaxy effects -->
+  <!-- Load Three.js for advanced 3D elements -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
   <script src="/static/app.js" defer></script>
 </head>
 <body>
 
-  <!-- Fullscreen 3D Starfield Background Canvas -->
+  <!-- Fullscreen 3D Starfield & Holographic Grid Canvas -->
   <canvas id="bg-canvas"></canvas>
 
   <div id="app" class="perspective-container">
@@ -23,34 +23,54 @@
         <div class="logo-orb"></div>
         <div class="logo-text">
           <h1>Rumain</h1>
-          <p>3D VOICE ASSISTANT</p>
+          <p>HOLOGRAPHIC AI PORTAL</p>
         </div>
       </div>
       <div class="status-panel">
         <div class="status-badge offline" id="ws-status">
           <span class="dot"></span>
-          <span id="ws-status-text">Connecting…</span>
+          <span id="ws-status-text">System offline</span>
         </div>
       </div>
     </header>
 
-    <!-- Main 3D Panel Layout -->
+    <!-- Main Deck Grid -->
     <div class="main-deck">
       
-      <!-- LEFT: 3D Avatar Panel (Only keeps the girl picture inside 3D environment) -->
+      <!-- LEFT: Sci-Fi 3D Hologram Portal (The Avatar) -->
       <div class="panel-3d avatar-panel glass-3d" id="avatar-panel">
         <div class="panel-inner">
-          <div class="orb-galaxy-wrapper">
+          <div class="hologram-viewport">
+            
+            <!-- Three.js Local Star Galaxy behind avatar -->
             <canvas id="orb-galaxy-canvas"></canvas>
+            
+            <!-- Circular Saturn Orbiting HUD Rings -->
+            <div class="hud-ring outer-ring"></div>
+            <div class="hud-ring middle-ring"></div>
+            <div class="hud-ring inner-ring"></div>
+            
+            <!-- Coordinate bracket markers -->
+            <div class="hud-bracket bracket-tl"></div>
+            <div class="hud-bracket bracket-tr"></div>
+            <div class="hud-bracket bracket-bl"></div>
+            <div class="hud-bracket bracket-br"></div>
+            
+            <!-- Circular Avatar Frame -->
             <div class="avatar-frame-3d" id="orb-core">
-              <img src="/static/avatar.png" alt="AI Assistant Avatar" id="avatar-img" />
+              <img src="/static/avatar.png" alt="Rumain Assistant Avatar" id="avatar-img" />
+              <!-- Hologram scanning sweep bar -->
+              <div class="scan-line"></div>
             </div>
+            
           </div>
+          
           <div class="orb-status">
-            <span class="orb-label">State</span>
-            <h2 class="orb-state" id="orb-state">Initializing…</h2>
+            <span class="orb-label">System State</span>
+            <h2 class="orb-state" id="orb-state">AWAITING TRIGGER</h2>
           </div>
-          <!-- Animated Voice Waveform -->
+          
+          <!-- Cyberpunk Audio Waveform -->
           <div class="waveform" id="waveform">
             <div class="wave-bar" style="height:6px"></div>
             <div class="wave-bar" style="height:14px"></div>
@@ -69,18 +89,23 @@
         </div>
       </div>
 
-      <!-- RIGHT: 3D Log Panel (Only keeps conversation logs and input) -->
+      <!-- RIGHT: Cybernetic Console (The Log & Input) -->
       <div class="panel-3d log-panel glass-3d" id="log-panel">
         <div class="panel-inner">
           <div class="log-header">
-            <span class="log-title">Live Log Feed</span>
-            <button onclick="clearLog()" class="clear-btn-3d">Clear Logs</button>
+            <div class="terminal-dots">
+              <span class="term-dot red"></span>
+              <span class="term-dot yellow"></span>
+              <span class="term-dot green"></span>
+            </div>
+            <span class="log-title">CON_COMM_LOGS</span>
+            <button onclick="clearLog()" class="clear-btn-3d">PURGE</button>
           </div>
           
           <div class="log-feed" id="log-feed">
             <div class="log-entry info">
               <span class="log-time" id="start-time"></span>
-              Console loaded. Awaiting connection to backend...
+              [CORE_INIT] Holographic dashboard loaded. Awaiting backend uplink...
             </div>
           </div>
           
@@ -89,7 +114,7 @@
               <span class="mic-icon">🌀</span>
             </button>
             <input type="text" class="input-3d" id="cmd-input"
-                   placeholder="Type a command or say 'Hey Rumain'..."
+                   placeholder="Feed command to memory terminal..."
                    autocomplete="off"
                    onkeydown="if(event.key==='Enter')sendCommand()"/>
             <button class="send-btn-3d" onclick="sendCommand()" title="Send">➤</button>

@@ -1,6 +1,6 @@
 /* ============================================================
    Rumain Dashboard — app.js
-   WebSocket client · 3D Starfield & Galaxy · 3D Card Hover Tilt
+   WebSocket client · Sound-Reactive 3D Starfield · 3D Card Hover
    ============================================================ */
 
 'use strict';
@@ -62,7 +62,7 @@ function connectWS() {
   ws.onopen = () => {
     wsRetries = 0;
     setWsStatus(true);
-    addLog('info', 'Connected to Rumain backend.');
+    addLog('info', 'Secure uplink established with Rumain brain.');
     setOrbState('idle');
   };
 
@@ -74,7 +74,7 @@ function connectWS() {
   ws.onclose = () => {
     setWsStatus(false);
     setOrbState('idle');
-    addLog('error', 'Connection lost. Reconnecting…');
+    addLog('error', 'Uplink lost. Attempting reconnection...');
     const delay = Math.min(5000, 1000 * (wsRetries++ + 1));
     setTimeout(connectWS, delay);
   };
@@ -102,7 +102,7 @@ function handleMessage(msg) {
       break;
 
     case 'workflow':
-      addLog('info', `Workflow Status: ${msg.status}`);
+      addLog('info', `[WORKFLOW] Status: ${msg.status.toUpperCase()}`);
       break;
 
     case 'api_command':
@@ -157,7 +157,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
   };
 
   webSpeechRec.onerror = (event) => {
-    addLog('error', `Microphone error: ${event.error}`);
+    addLog('error', `Mic error: ${event.error}`);
     setOrbState('idle');
   };
   
@@ -168,7 +168,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
 
 function toggleWebSpeech() {
   if (!webSpeechRec) {
-    addLog('error', 'Browser Speech API not supported. Use text fallback.');
+    addLog('error', 'Browser Speech API not supported. Use text console.');
     return;
   }
   if (currentOrbState === 'listening') {
@@ -190,10 +190,10 @@ function setOrbState(state) {
   orbCore.className = 'avatar-frame-3d'; // Reset classes
 
   const stateMap = {
-    idle:      { label: 'Say "Hey Rumain"', cls: null },
-    listening: { label: 'Listening…',       cls: 'listening' },
-    thinking:  { label: 'Thinking…',        cls: 'thinking' },
-    speaking:  { label: 'Speaking…',        cls: 'speaking' },
+    idle:      { label: 'AWAITING TRIGGER',   cls: null },
+    listening: { label: 'LISTENING...',       cls: 'listening' },
+    thinking:  { label: 'THINKING...',        cls: 'thinking' },
+    speaking:  { label: 'TRANSMITTING...',    cls: 'speaking' },
   };
 
   const s = stateMap[state] || stateMap.idle;
@@ -229,9 +229,11 @@ function addLog(type, text) {
   
   let labelText = text;
   if (type === 'command') {
-    labelText = `🙋 User: "${text}"`;
+    labelText = `[CMD_IN] > "${text}"`;
   } else if (type === 'response') {
-    labelText = `🤖 Rumain: "${text}"`;
+    labelText = `[RUMAIN_OUT] > "${text}"`;
+  } else if (type === 'error') {
+    labelText = `[SYS_ERROR] > "${text}"`;
   }
   
   el.innerHTML = `<span class="log-time">${formatTime(new Date())}</span>${escHtml(labelText)}`;
@@ -246,7 +248,7 @@ function addLog(type, text) {
 
 function clearLog() {
   logFeed.innerHTML = '';
-  addLog('info', 'Console logs cleared.');
+  addLog('info', '[CONSOLE] Memory logs purged successfully.');
 }
 
 window.clearLog = clearLog;
@@ -281,13 +283,14 @@ function formatTime(d) {
   return d.toLocaleTimeString('en-US', { hour12: true, hour:'2-digit', minute:'2-digit', second:'2-digit' });
 }
 
+// Escapes HTML tags to prevent XSS/rendering issues
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function setWsStatus(online) {
   wsStatusEl.className = `status-badge ${online ? 'online' : 'offline'}`;
-  wsTextEl.textContent  = online ? 'System Online' : 'System Offline';
+  wsTextEl.textContent  = online ? 'Uplink active' : 'Uplink offline';
 }
 
 function spawnRipple(x, y) {
@@ -309,20 +312,20 @@ function init3DLayoutTilt() {
     const dy = e.clientY - cy;
 
     // Small rotating angle for the panels to create a 3D hologram effect
-    const rx = (dy / cy) * -8;  // Tilt up/down
-    const ry = (dx / cx) * 8;   // Tilt left/right
+    const rx = (dy / cy) * -12;  // Tilt up/down
+    const ry = (dx / cx) * 12;   // Tilt left/right
 
-    avatarPanel.style.transform = `rotateY(${5 + ry}deg) rotateX(${5 + rx}deg) translateZ(10px)`;
-    logPanel.style.transform = `rotateY(${-5 + ry}deg) rotateX(${5 + rx}deg) translateZ(10px)`;
+    avatarPanel.style.transform = `rotateY(${7 + ry}deg) rotateX(${5 + rx}deg) translateZ(15px)`;
+    logPanel.style.transform = `rotateY(${-7 + ry}deg) rotateX(${5 + rx}deg) translateZ(15px)`;
   });
   
   body.addEventListener('mouseleave', () => {
-    avatarPanel.style.transform = 'rotateY(5deg) rotateX(0deg) translateZ(10px)';
-    logPanel.style.transform = 'rotateY(-5deg) rotateX(0deg) translateZ(10px)';
+    avatarPanel.style.transform = 'rotateY(7deg) rotateX(0deg) translateZ(10px)';
+    logPanel.style.transform = 'rotateY(-7deg) rotateX(0deg) translateZ(10px)';
   });
 }
 
-// ── Three.js Fullscreen Starfield ───────────────────────────
+// ── Three.js Fullscreen Starfield (Sound-Reactive) ───────────
 function initThreeBackground() {
   const canvas = $('bg-canvas');
   if (!canvas || typeof THREE === 'undefined') return;
@@ -332,25 +335,25 @@ function initThreeBackground() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   const scene  = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 1, 2000);
+  const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 1, 2500);
   camera.position.z = 800;
 
   // Star points
-  const count = 1800;
+  const count = 2200;
   const geometry = new THREE.BufferGeometry();
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
   
   const palette = [
-    [0.9, 0.9, 1.0], // white stars
-    [0.55, 0.36, 0.96], // violet
-    [0.0, 0.94, 1.0], // cyan
+    [0.9, 0.9, 1.0], // White
+    [0.69, 0.15, 1.0], // Violet
+    [0.0, 0.94, 1.0], // Cyan
   ];
 
   for (let i = 0; i < count; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 2000;
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 2000;
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 1500;
+    positions[i * 3] = (Math.random() - 0.5) * 2200;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 2200;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 1800;
 
     const c = palette[Math.floor(Math.random() * palette.length)];
     colors[i * 3] = c[0];
@@ -362,10 +365,10 @@ function initThreeBackground() {
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
   const material = new THREE.PointsMaterial({
-    size: 2.0,
+    size: 2.2,
     vertexColors: true,
     transparent: true,
-    opacity: 0.7,
+    opacity: 0.8,
     blending: THREE.AdditiveBlending
   });
 
@@ -373,10 +376,34 @@ function initThreeBackground() {
   scene.add(starfield);
 
   // Animation Loop
+  let t = 0;
   const animate = () => {
     requestAnimationFrame(animate);
-    starfield.rotation.y += 0.0003;
-    starfield.rotation.x += 0.0001;
+    t += 0.01;
+    
+    // React to the active states
+    if (currentOrbState === 'listening') {
+      starfield.rotation.y += 0.004;
+      starfield.rotation.x += 0.0012;
+      material.size = 2.2;
+      camera.position.z += (680 - camera.position.z) * 0.05; // slight zoom-in
+    } else if (currentOrbState === 'thinking') {
+      starfield.rotation.y += 0.0015;
+      material.size = 2.2 + Math.sin(t * 8) * 0.7; // Twinkle size pulse
+      camera.position.z += (800 - camera.position.z) * 0.05;
+    } else if (currentOrbState === 'speaking') {
+      starfield.rotation.y += 0.0008;
+      material.size = 2.2;
+      // Slight speak shake
+      camera.position.z = 800 + Math.sin(t * 15) * 8;
+    } else {
+      // Idle
+      starfield.rotation.y += 0.0002;
+      starfield.rotation.x += 0.00005;
+      material.size = 2.2;
+      camera.position.z += (800 - camera.position.z) * 0.05;
+    }
+    
     renderer.render(scene, camera);
   };
   animate();
@@ -388,7 +415,7 @@ function initThreeBackground() {
   });
 }
 
-// ── Three.js Avatar Galaxy ───────────────────────────────────
+// ── Three.js Avatar Local Galaxy ─────────────────────────────
 function initOrbGalaxy() {
   const canvas = $('orb-galaxy-canvas');
   if (!canvas || typeof THREE === 'undefined') return;
@@ -404,7 +431,7 @@ function initOrbGalaxy() {
   const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
   camera.position.z = 280;
 
-  // Star texture
+  // Circular Star texture
   const starTexture = (() => {
     const c = document.createElement('canvas');
     c.width = 16; c.height = 16;
@@ -417,29 +444,28 @@ function initOrbGalaxy() {
     return new THREE.CanvasTexture(c);
   })();
 
-  // Galaxy Arms
-  const count = 4000;
+  // Galaxy geometry
+  const count = 4200;
   const geometry = new THREE.BufferGeometry();
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
 
-  const innerColor = new THREE.Color('#b026ff'); // Purple core
-  const outerColor = new THREE.Color('#00f0ff'); // Cyan outer
+  const innerColor = new THREE.Color('#b026ff'); // Purple
+  const outerColor = new THREE.Color('#00f0ff'); // Cyan
 
   for (let i = 0; i < count; i++) {
     const r = Math.pow(Math.random(), 2.0) * 120 + 5;
-    const spin = r * 0.025;
-    const armAngle = ((i % 2) * Math.PI) + spin + (Math.random() - 0.5) * 0.25;
+    const spin = r * 0.026;
+    const armAngle = ((i % 2) * Math.PI) + spin + (Math.random() - 0.5) * 0.28;
 
     const x = Math.cos(armAngle) * r;
-    const y = (Math.random() - 0.5) * 12 * (1 - r / 125);
+    const y = (Math.random() - 0.5) * 10 * (1 - r / 125);
     const z = Math.sin(armAngle) * r;
 
     positions[i * 3] = x;
     positions[i * 3 + 1] = y;
     positions[i * 3 + 2] = z;
 
-    // Gradient transition
     const mixed = innerColor.clone().lerp(outerColor, r / 125);
     colors[i * 3] = mixed.r;
     colors[i * 3 + 1] = mixed.g;
@@ -450,23 +476,34 @@ function initOrbGalaxy() {
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
   const material = new THREE.PointsMaterial({
-    size: 2.5,
+    size: 2.6,
     map: starTexture,
     vertexColors: true,
     transparent: true,
-    opacity: 0.9,
+    opacity: 0.95,
     blending: THREE.AdditiveBlending,
     depthWrite: false
   });
 
   const galaxy = new THREE.Points(geometry, material);
-  galaxy.rotation.x = 1.3; // Angle the disk towards viewer
+  galaxy.rotation.x = 1.35; // Tilt slightly
   scene.add(galaxy);
 
   // Animation Loop
   const animate = () => {
     requestAnimationFrame(animate);
-    galaxy.rotation.z += 0.0035; // Spin galaxy
+    
+    // Spin galaxy based on current status
+    if (currentOrbState === 'listening') {
+      galaxy.rotation.z += 0.015;
+    } else if (currentOrbState === 'thinking') {
+      galaxy.rotation.z += 0.035;
+    } else if (currentOrbState === 'speaking') {
+      galaxy.rotation.z += 0.008;
+    } else {
+      galaxy.rotation.z += 0.0035;
+    }
+    
     renderer.render(scene, camera);
   };
   animate();
