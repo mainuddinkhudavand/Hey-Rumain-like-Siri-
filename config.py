@@ -70,3 +70,5 @@ AGENT_COLORS = {
     "hand":  "#ffb300",   # Amber
     "voice": "#00ff88",   # Emerald
 }
+
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
