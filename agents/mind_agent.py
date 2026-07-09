@@ -7,6 +7,7 @@ import json
 import logging
 import urllib.request
 import urllib.error
+import asyncio
 from typing import Optional, Dict, Any, List
 
 from agents import Agent, AgentState, Event
