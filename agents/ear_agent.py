@@ -40,6 +40,7 @@ class EarAgent(Agent):
         
         self._mic = None
         self._workflow = None
+        self._voice_agent = None
         self._stop_evt = threading.Event()
         self._is_active = False # True when actively recording a command
         
@@ -51,9 +52,10 @@ class EarAgent(Agent):
         self._vosk_model = None
         self._vosk_recognizer = None
 
-    def start_listening(self, workflow) -> None:
+    def start_listening(self, workflow, voice_agent=None) -> None:
         """Initialize and start background threads for listening and hotkeys."""
         self._workflow = workflow
+        self._voice_agent = voice_agent
         
         # Start microphone listen thread
         self._listen_thread = threading.Thread(target=self._listen_loop, daemon=True, name="EarAgent-Listen")
@@ -139,6 +141,8 @@ class EarAgent(Agent):
     def _trigger_wake(self) -> None:
         """Trigger the assistant to immediately wake up and listen for a command."""
         self._is_active = True
+        if self._voice_agent:
+            self._voice_agent.stop_speaking()
 
     # ── Background Listen Loop ────────────────────────────────
     def _listen_loop(self) -> None:
