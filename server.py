@@ -64,7 +64,7 @@ _workflow_ref = None  # Reference to the running workflow (set in main.py)
 
 # ── API Routes ────────────────────────────────────────────────
 @app.get("/", response_class=HTMLResponse)
-async def index() -> FileResponse | HTMLResponse:
+async def index():
     html_path = FRONTEND_DIR / "index.html"
     if html_path.exists():
         return FileResponse(str(html_path))
