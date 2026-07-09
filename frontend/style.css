@@ -1,0 +1,521 @@
+/* ============================================================
+   Rumain Voice Assistant — Revamped 3D Glassmorphism
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;900&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+/* ── Design Tokens ─────────────────────────────────────────── */
+:root {
+  --bg-void:        #02010b;
+  --bg-deep:        #050316;
+  --bg-surface:     rgba(20, 20, 40, 0.35);
+  --bg-surface-hover: rgba(35, 35, 70, 0.45);
+  
+  --glass-border:   rgba(255, 255, 255, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.12);
+  --glass-shadow:   0 30px 60px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255,255,255,0.1);
+
+  /* Neon Glow Accent Colors */
+  --ear-color:      #00f0ff;
+  --ear-glow:       rgba(0, 240, 255, 0.45);
+  --mind-color:     #b026ff;
+  --mind-glow:      rgba(176, 38, 255, 0.45);
+  --voice-color:    #00ff88;
+  --voice-glow:     rgba(0, 255, 136, 0.45);
+
+  --text-primary:   #ffffff;
+  --text-muted:     rgba(255, 255, 255, 0.65);
+  --text-dim:       rgba(255, 255, 255, 0.35);
+  
+  --transition:     all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  --radius-card:    28px;
+}
+
+/* ── Global Reset & Body ───────────────────────────────────── */
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg-void);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+  background-image: 
+    radial-gradient(circle at 10% 30%, rgba(176, 38, 255, 0.1), transparent 35%),
+    radial-gradient(circle at 90% 70%, rgba(0, 240, 255, 0.1), transparent 35%);
+}
+
+/* 3D Canvas Background */
+#bg-canvas {
+  position: fixed; inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── App Shell & 3D Perspective ───────────────────────────── */
+.perspective-container {
+  perspective: 1500px;
+  transform-style: preserve-3d;
+  position: relative; z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 30px;
+  gap: 24px;
+}
+
+/* ── 3D Header ─────────────────────────────────────────────── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  border-radius: 50px;
+  transform: translateZ(30px);
+}
+
+.glass-3d {
+  background: var(--bg-surface);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid var(--glass-border);
+  border-top: 1px solid var(--glass-highlight);
+  box-shadow: var(--glass-shadow);
+  transition: var(--transition);
+  transform-style: preserve-3d;
+}
+
+.glass-3d:hover {
+  background: var(--bg-surface-hover);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.logo-3d {
+  display: flex; align-items: center; gap: 14px;
+  transform: translateZ(10px);
+}
+
+.logo-orb {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--mind-color), var(--ear-color));
+  box-shadow: 0 0 20px rgba(176,38,255,0.6);
+  animation: logoBreath 3s ease-in-out infinite;
+}
+
+@keyframes logoBreath {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 30px rgba(0, 240, 255, 0.8); }
+}
+
+.logo-text h1 {
+  font-size: 1.5rem; font-weight: 900; letter-spacing: -0.01em;
+  background: linear-gradient(to right, #ffffff, var(--ear-color));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+
+.logo-text p {
+  font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.12em;
+  text-transform: uppercase; margin-top: 2px;
+}
+
+/* Status Badge */
+.status-badge {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem; font-weight: 600;
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+}
+
+.status-badge.online {
+  background: rgba(0, 255, 136, 0.1);
+  color: #00ff88;
+  border-color: rgba(0, 255, 136, 0.25);
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.15);
+}
+
+.status-badge.offline {
+  background: rgba(255, 50, 100, 0.1);
+  color: #ff3264;
+  border-color: rgba(255, 50, 100, 0.25);
+}
+
+.dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* ── Main Deck (3D Panels Grid) ───────────────────────────── */
+.main-deck {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 30px;
+  transform-style: preserve-3d;
+  height: calc(100% - 100px);
+}
+
+.panel-3d {
+  border-radius: var(--radius-card);
+  padding: 30px;
+  transform-style: preserve-3d;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-inner {
+  transform-style: preserve-3d;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+/* ── 3D Avatar Panel (Left Side) ──────────────────────────── */
+.avatar-panel {
+  transform: rotateY(5deg) translateZ(10px);
+  position: relative;
+}
+
+.orb-galaxy-wrapper {
+  position: relative;
+  width: 320px; height: 320px;
+  display: flex; align-items: center; justify-content: center;
+  transform-style: preserve-3d;
+  transform: translateZ(40px);
+  margin-top: 10px;
+}
+
+#orb-galaxy-canvas {
+  position: absolute;
+  top: -40px; left: -40px;
+  width: 400px; height: 400px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.avatar-frame-3d {
+  width: 190px; height: 190px;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  box-shadow: 
+    0 0 40px rgba(176, 38, 255, 0.7),
+    0 0 80px rgba(0, 240, 255, 0.4),
+    inset 0 0 30px rgba(255,255,255,0.2);
+  transition: var(--transition);
+  transform-style: preserve-3d;
+  transform: translateZ(20px);
+}
+
+.avatar-frame-3d img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  transform: scale(1.05);
+  transition: transform 0.8s ease;
+}
+
+.avatar-panel:hover .avatar-frame-3d img {
+  transform: scale(1.15) rotate(2deg);
+}
+
+.orb-status {
+  text-align: center;
+  transform: translateZ(30px);
+  margin: 15px 0;
+}
+
+.orb-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.orb-state {
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin-top: 5px;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff, var(--ear-color));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 25px rgba(0, 240, 255, 0.35);
+}
+
+/* Voice Waveform Animation */
+.waveform {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 50px;
+  transform: translateZ(25px);
+}
+
+.wave-bar {
+  width: 6px;
+  border-radius: 4px;
+  background: linear-gradient(to top, var(--mind-color), var(--ear-color));
+  box-shadow: 0 0 10px var(--ear-glow);
+  transition: height 0.1s ease;
+}
+
+/* ── 3D Log Panel (Right Side) ────────────────────────────── */
+.log-panel {
+  transform: rotateY(-5deg) translateZ(10px);
+  justify-content: space-between;
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 12px;
+  transform: translateZ(20px);
+}
+
+.log-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+}
+
+.clear-btn-3d {
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  color: var(--text-muted);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: var(--transition);
+}
+
+.clear-btn-3d:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  transform: scale(1.05);
+}
+
+.log-feed {
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: calc(100vh - 280px);
+  transform: translateZ(15px);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.log-feed::-webkit-scrollbar {
+  width: 4px;
+}
+.log-feed::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.log-entry {
+  padding: 12px 18px;
+  border-radius: 18px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  border-left: 4px solid transparent;
+  animation: entryFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  background: rgba(0, 0, 0, 0.25);
+  word-break: break-word;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transform: translateZ(5px);
+}
+
+@keyframes entryFade {
+  from { opacity: 0; transform: translateY(15px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.log-entry.command {
+  background: rgba(0, 240, 255, 0.06);
+  border-color: var(--ear-color);
+  color: #ffffff;
+  margin-left: 20px;
+  border-radius: 18px 18px 2px 18px;
+  box-shadow: 0 5px 15px rgba(0, 240, 255, 0.05);
+}
+
+.log-entry.response {
+  background: rgba(0, 255, 136, 0.06);
+  border-color: var(--voice-color);
+  color: #d1fae5;
+  margin-right: 20px;
+  border-radius: 18px 18px 18px 2px;
+  box-shadow: 0 5px 15px rgba(0, 255, 136, 0.05);
+}
+
+.log-entry.error {
+  background: rgba(255, 50, 100, 0.06);
+  border-color: #ff3264;
+  color: #fecaca;
+}
+
+.log-entry.info {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.log-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* ── Input Deck (Bottom Log Panel) ───────────────────────── */
+.input-deck-3d {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  border-top: 1px solid var(--glass-border);
+  padding-top: 20px;
+  transform: translateZ(25px);
+}
+
+.input-3d {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 14px 20px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  transition: var(--transition);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.input-3d:focus {
+  border-color: var(--mind-color);
+  background: rgba(176, 38, 255, 0.04);
+  box-shadow: 0 0 0 4px rgba(176, 38, 255, 0.15), inset 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.mic-btn-3d {
+  width: 50px; height: 50px;
+  border-radius: 16px;
+  border: 1px solid var(--glass-border);
+  background: var(--bg-surface);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+  box-shadow: var(--glass-shadow);
+}
+
+.mic-btn-3d:hover {
+  transform: scale(1.05) translateZ(5px);
+  border-color: var(--ear-color);
+  box-shadow: 0 0 15px var(--ear-glow);
+}
+
+.mic-icon {
+  font-size: 1.4rem;
+}
+
+.send-btn-3d {
+  width: 50px; height: 50px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--mind-color), var(--ear-color));
+  border: none;
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+  box-shadow: 0 5px 15px rgba(176, 38, 255, 0.35);
+}
+
+.send-btn-3d:hover {
+  transform: scale(1.05) translateZ(5px);
+  box-shadow: 0 8px 20px rgba(176, 38, 255, 0.5);
+}
+
+/* ── State classes for Avatar Frame ───────────────────────── */
+.avatar-frame-3d.listening {
+  animation: borderListen 1.2s ease-in-out infinite alternate;
+}
+@keyframes borderListen {
+  from { box-shadow: 0 0 40px rgba(0, 240, 255, 0.7); }
+  to { box-shadow: 0 0 80px rgba(0, 240, 255, 1), 0 0 120px rgba(176, 38, 255, 0.6); transform: translateZ(30px) scale(1.06); }
+}
+
+.avatar-frame-3d.thinking {
+  animation: borderThink 1.5s cubic-bezier(0.68,-0.55,0.27,1.55) infinite;
+}
+@keyframes borderThink {
+  0%, 100% { transform: translateZ(20px) rotate(0deg); }
+  50% { transform: translateZ(25px) rotate(15deg) scale(1.03); box-shadow: 0 0 60px rgba(176, 38, 255, 0.9); }
+}
+
+.avatar-frame-3d.speaking {
+  animation: borderSpeak 0.3s ease-in-out infinite alternate;
+}
+@keyframes borderSpeak {
+  from { transform: translateZ(20px) scale(0.98); box-shadow: 0 0 40px rgba(0, 255, 136, 0.6); }
+  to { transform: translateZ(25px) scale(1.05); box-shadow: 0 0 70px rgba(0, 255, 136, 1); }
+}
+
+/* ── Responsive adjustments ────────────────────────────────── */
+@media (max-width: 900px) {
+  .main-deck {
+    grid-template-columns: 1fr;
+    height: auto;
+    overflow-y: auto;
+  }
+  .perspective-container {
+    height: auto;
+    overflow-y: auto;
+  }
+  .avatar-panel, .log-panel {
+    transform: none !important;
+  }
+  .log-feed {
+    max-height: 400px;
+  }
+}
